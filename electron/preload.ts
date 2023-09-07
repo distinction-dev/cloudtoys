@@ -82,11 +82,33 @@ function useLoading() {
 
 // ----------------------------------------------------------------------
 
-const { appendLoading, removeLoading } = useLoading()
-domReady().then(appendLoading)
+// const { appendLoading, removeLoading } = useLoading()
+// domReady().then(appendLoading)
 
-window.onmessage = (ev) => {
-  ev.data.payload === 'removeLoading' && removeLoading()
-}
+// window.onmessage = (ev) => {
+//   ev.data.payload === 'removeLoading' && removeLoading()
+// }
 
-setTimeout(removeLoading, 4999)
+// setTimeout(removeLoading, 4999)
+
+// const { appendLoading, removeLoading } = useLoading()
+// domReady().then(appendLoading)
+
+// window.onmessage = (ev) => {
+//   ev.data.payload === 'removeLoading' && removeLoading()
+// }
+
+// setTimeout(removeLoading, 4999)
+
+// https://www.electronjs.org/docs/latest/api/context-bridge
+
+import { contextBridge, ipcRenderer } from 'electron'
+
+contextBridge.exposeInMainWorld('electronApi', {
+  invoke: (method: string, params: object) => {
+    return ipcRenderer.invoke(method, params)
+  },
+  // DescribeLogGroupsCommand(params: any) {
+  //   return ipcRenderer.invoke('DescribeLogGroupsCommand', params)
+  // },
+})
