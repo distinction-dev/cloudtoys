@@ -1,5 +1,11 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
+import services from './services'
+
+// register service handlers
+Object.keys(services).forEach((service) => {
+  ipcMain.handle(service, (_e, params) => services[service](params))
+})
 
 // The built directory structure
 //
@@ -22,13 +28,20 @@ function createWindow() {
     icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      devTools: process.env.NODE_ENV !== 'production',
     },
+    width: 640 * 2,
+    height: 480 * 2,
   })
+  // win.maximize()
+  if (process.env.NODE_ENV !== 'production') {
+    win.webContents.openDevTools()
+  }
 
   // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
-  })
+  // win.webContents.on('did-finish-load', () => {
+  //   win?.webContents.send('main-process-message', new Date().toLocaleString())
+  // })
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -39,6 +52,9 @@ function createWindow() {
 }
 
 app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
   win = null
 })
 
