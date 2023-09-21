@@ -8,27 +8,29 @@ import { AuthProvider } from './infrastructure/authentication/AuthProvider'
 
 const App: React.FC<unknown> = () => {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<LoginForm />} />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </AuthProvider>
+    <>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </>
   )
 }
 

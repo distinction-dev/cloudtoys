@@ -18,7 +18,7 @@ async function initClient() {
       // clientConfig:{
       //   region: ''
       // },
-      region: '',
+      region: 'ap-south-1',
     })
     // console.log(await cloudWatchLogsClient)
   } catch (e) {
