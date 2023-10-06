@@ -1,12 +1,13 @@
 #root {
-  height: 100%;
+  height: 100vh;
   width: 100vw;
 }
 
 body {
-  min-height: 100vh;
-  background-color: #e7e9f0;
-  padding: 30px;
+  height: 100%;
+  /* stone-200 */
+  background-color: #e7e5e4;
+  /* padding: 30px; */
 }
 html {
   font-family: Rubik !important;
@@ -26,9 +27,9 @@ a.active::before {
   background-color: #2e5bff;
 }
 
-a:hover {
+/* a:hover {
   background-color: rgba(46, 91, 255, 0.1);
-}
+} */
 
 nav {
   transition: all 0.2s;

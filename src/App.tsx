@@ -5,6 +5,8 @@ import { Route, Routes } from 'react-router'
 import LoginForm from './components/auth/LoginForm'
 import { ProtectedRoute } from './infrastructure/authentication/ProtectedRoute'
 import { AuthProvider } from './infrastructure/authentication/AuthProvider'
+import LogGroup from './pages/LogGroup'
+import LogEvents from './pages/LogEvents'
 
 const App: React.FC<unknown> = () => {
   return (
@@ -25,6 +27,22 @@ const App: React.FC<unknown> = () => {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/log-group"
+            element={
+              <ProtectedRoute>
+                <LogGroup />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/log-events"
+            element={
+              <ProtectedRoute>
+                <LogEvents />
               </ProtectedRoute>
             }
           />

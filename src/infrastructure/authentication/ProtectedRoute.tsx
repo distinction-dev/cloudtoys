@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from './authContext'
+import Layout from '../../components/layout/Layout'
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth() as { user?: boolean }
@@ -9,5 +10,5 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     // user is not authenticated
     return <Navigate to="/login" />
   }
-  return children
+  return <Layout>{children}</Layout>
 }
