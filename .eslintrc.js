@@ -32,5 +32,6 @@ module.exports = {
     'react-refresh/only-export-components': 'warn',
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
+    'jsx-a11y/click-events-have-key-events': 'off',
   },
 }

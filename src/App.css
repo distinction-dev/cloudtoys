@@ -34,12 +34,6 @@ a.active::before {
 nav {
   transition: all 0.2s;
 }
-/* nav.expanded .link-label {
-  display: none;
-} */
-/* nav.expanded {
-  width: 66px;
-} */
 
 nav.expanded ul li {
   align-items: center;

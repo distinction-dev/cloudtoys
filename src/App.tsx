@@ -6,47 +6,41 @@ import LoginForm from './components/auth/LoginForm'
 import { ProtectedRoute } from './infrastructure/authentication/ProtectedRoute'
 import { AuthProvider } from './infrastructure/authentication/AuthProvider'
 import LogGroup from './pages/LogGroup'
-import LogEvents from './pages/LogEvents'
+import LogGroupProvider from './infrastructure/contextProviders/logGroupProvider'
 
 const App: React.FC<unknown> = () => {
   return (
     <>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginForm />} />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/log-group"
-            element={
-              <ProtectedRoute>
-                <LogGroup />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/log-events"
-            element={
-              <ProtectedRoute>
-                <LogEvents />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <LogGroupProvider>
+          <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/log-group"
+              element={
+                <ProtectedRoute>
+                  <LogGroup />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </LogGroupProvider>
       </AuthProvider>
     </>
   )
