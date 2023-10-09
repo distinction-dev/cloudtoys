@@ -1,11 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
-import services from './services'
+import { registerServices } from './services/register'
 
-// register service handlers
-Object.keys(services).forEach((service) => {
-  ipcMain.handle(service, (_e, params) => services[service](params))
-})
+registerServices()
 
 // The built directory structure
 //

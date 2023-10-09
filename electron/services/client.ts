@@ -4,28 +4,20 @@ const { CloudWatchLogsClient } = require('@aws-sdk/client-cloudwatch-logs')
 
 let cloudWatchLogsClient: typeof CloudWatchLogsClient = null
 
-async function initClient() {
+export function initAWSClient({ region, profile }: { region: string; profile?: string }) {
   try {
     cloudWatchLogsClient = new CloudWatchLogsClient({
       credentials: fromIni({
-        // profile: '',
+        profile,
         // filepath: '~/.aws/credentials',
         // configFilepath: '~/.aws/config',
       }),
-      // credentals: fromSSO({
-      //   profile: '',
-      // }),
-      // clientConfig:{
-      //   region: ''
-      // },
-      region: 'eu-north-1',
+      region,
     })
-    // console.log(await cloudWatchLogsClient)
+    return cloudWatchLogsClient
   } catch (e) {
     console.error('Could not initialize client', e)
   }
 }
 
-initClient()
-
-export default cloudWatchLogsClient
+export const getAWSClient = () => cloudWatchLogsClient
