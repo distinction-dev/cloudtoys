@@ -1,5 +1,5 @@
 import React from 'react'
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
+import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
 
 type Props = {
   children: React.ReactNode
@@ -47,7 +47,7 @@ const Accordion = ({
               {active ? (
                 <>{openIcon ? openIcon : <IoIosArrowDown className={iconClasses ?? 'w-6 h-6'} />}</>
               ) : (
-                <>{closeIcon ? closeIcon : <IoIosArrowUp className={iconClasses ?? 'w-6 h-6'} />}</>
+                <>{closeIcon ? closeIcon : <IoIosArrowForward className={iconClasses ?? 'w-6 h-6'} />}</>
               )}
             </div>
             &nbsp;

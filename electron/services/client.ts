@@ -17,6 +17,7 @@ export function initAWSClient({ region, profile }: { region: string; profile?: s
     return cloudWatchLogsClient
   } catch (e) {
     console.error('Could not initialize client', e)
+    return false
   }
 }
 

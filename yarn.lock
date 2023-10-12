@@ -1275,6 +1275,14 @@
     "@smithy/types" "^2.3.0"
     tslib "^2.5.0"
 
+"@smithy/shared-ini-file-loader@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@smithy/shared-ini-file-loader/-/shared-ini-file-loader-2.2.0.tgz#9e4a90a29fe3f109875c26e6127802ed0953f43d"
+  integrity sha512-xFXqs4vAb5BdkzHSRrTapFoaqS4/3m/CGZzdw46fBjYZ0paYuLAoMY60ICCn1FfGirG+PiJ3eWcqJNe4/SkfyA==
+  dependencies:
+    "@smithy/types" "^2.3.5"
+    tslib "^2.5.0"
+
 "@smithy/signature-v4@^2.0.0":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@smithy/signature-v4/-/signature-v4-2.0.6.tgz#bd0ec98149dfc97e91e227411091e371248309ae"
@@ -1303,6 +1311,13 @@
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@smithy/types/-/types-2.3.0.tgz#a5c3869465f384fd4d811b2f1f37779e069ef06e"
   integrity sha512-pJce3rd39MElkV57UTPAoSYAApjQLELUxjU5adHNLYk9gnPvyIGbJNJTZVVFu00BrgZH3W/cQe8QuFcknDyodQ==
+  dependencies:
+    tslib "^2.5.0"
+
+"@smithy/types@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@smithy/types/-/types-2.3.5.tgz#7684a74d4368f323b478bd9e99e7dc3a6156b5e5"
+  integrity sha512-ehyDt8M9hehyxrLQGoA1BGPou8Js1Ocoh5M0ngDhJMqbFmNK5N6Xhr9/ZExWkyIW8XcGkiMPq3ZUEE0ScrhbuQ==
   dependencies:
     tslib "^2.5.0"
 
@@ -4630,6 +4645,11 @@ react-dom@^18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-icons@^4.11.0:
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.11.0.tgz#4b0e31c9bfc919608095cc429c4f1846f4d66c65"
+  integrity sha512-V+4khzYcE5EBk/BvcuYRq6V/osf11ODUM2J8hg2FDSswRrGvqiYUYPRy4OdrWaQOBj4NcpJfmHZLNaD+VH0TyA==
 
 react-is@^16.13.1:
   version "16.13.1"
