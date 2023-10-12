@@ -42,14 +42,14 @@ const Modal = ({
             <button
               onClick={closeModel}
               type="button"
-              className="mr-2 px-2 py-2 text-sm tracking-wide text-white capitalize transition-colors duration-200 transform bg-gray-500 hover:bg-gray-600 rounded-md shadow-md"
+              className="mr-2 px-2 py-2 text-sm border-none focus:outline-none hover:border-none tracking-wide text-white capitalize transition-colors duration-200 transform bg-gray-500 hover:bg-gray-600 rounded-md shadow-md"
             >
               Back
             </button>
             <button
               onClick={onConfirm}
               type="button"
-              className="absolute mr-2 px-2 py-2 text-sm tracking-wide text-white capitalize transition-colors duration-200 transform bg-red-500 hover-bg-red-600 rounded-md shadow-md"
+              className="relative mr-2 px-2 py-2 text-sm border-none focus:outline-none hover:border-none tracking-wide text-white capitalize transition-colors duration-200 transform bg-red-500 hover-bg-red-600 rounded-md shadow-md hover:bg-red-600 active:bg-red-700"
             >
               Delete
               {isLoading && (

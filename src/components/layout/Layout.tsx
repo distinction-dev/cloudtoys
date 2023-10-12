@@ -4,6 +4,7 @@ import { IoRefreshCircle } from 'react-icons/io5'
 import { ImSpinner2 } from 'react-icons/im'
 import { debounce } from '../../infrastructure/utils/debounce'
 import LogGroupSkeleton from '../../infrastructure/common/skeletons/LogGroupSkeleton'
+import Tooltip from '../../infrastructure/common/tooltip/Tooltip'
 
 export const LogGroupContext = React.createContext(null)
 
@@ -231,15 +232,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     logs?.logGroups?.map((item: LogGroup, index: number) => {
                       return (
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-                        <li
-                          role="button"
-                          className={`p-1 m-1 hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
+                        <Tooltip key={`loggroup_${item?.creationTime}_${index}`} message={item?.logGroupName}>
+                          <li
+                            role="button"
+                            className={`p-1 m-1 hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
                            ${item?.arn === logGroup?.arn ? 'bg-black/5 text-primary-700' : 'text-secondary-700'} `}
-                          key={`loggroup_${item?.creationTime}_${index}`}
-                          onClick={() => handleClick(item)}
-                        >
-                          {item?.logGroupName}
-                        </li>
+                            key={`loggroup_${item?.creationTime}_${index}`}
+                            onClick={() => handleClick(item)}
+                          >
+                            {item?.logGroupName}
+                          </li>
+                        </Tooltip>
                       )
                     })
                   ) : (
