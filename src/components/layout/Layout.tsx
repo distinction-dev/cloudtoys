@@ -137,8 +137,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       logGroup,
       setLogGroup,
       profile,
+      region,
     }
-  }, [initClients, logGroup, profile])
+  }, [initClients, logGroup, profile, region])
   return (
     <LogGroupContext.Provider value={logGroupContextValue}>
       <div className="flex flex-col">

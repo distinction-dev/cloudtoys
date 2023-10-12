@@ -1,15 +1,18 @@
 import React from 'react'
+import { ImSpinner2 } from 'react-icons/im'
 
 const Modal = ({
   closeModel,
   onConfirm,
   title,
   subTitle,
+  isLoading,
 }: {
   closeModel: any
   onConfirm: any
   title: string
   subTitle?: string
+  isLoading?: boolean
 }) => {
   return (
     <>
@@ -46,9 +49,14 @@ const Modal = ({
             <button
               onClick={onConfirm}
               type="button"
-              className="mr-2 px-2 py-2 text-sm tracking-wide text-white capitalize transition-colors duration-200 transform bg-red-500 hover-bg-red-600 rounded-md shadow-md"
+              className="absolute mr-2 px-2 py-2 text-sm tracking-wide text-white capitalize transition-colors duration-200 transform bg-red-500 hover-bg-red-600 rounded-md shadow-md"
             >
               Delete
+              {isLoading && (
+                <span className="text-white absolute top-0 left-0 w-full h-full flex justify-center items-center ">
+                  <ImSpinner2 className={'animate-spin w-5 h-5'} />
+                </span>
+              )}
             </button>
           </div>
         </div>

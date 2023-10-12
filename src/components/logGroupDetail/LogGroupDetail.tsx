@@ -36,6 +36,7 @@ const LogGroupDetail = () => {
   const [logStreams, setLogStreams] = React.useState([])
   const [logStreamLoading, setLogStreamLoading] = React.useState(false)
   const [confirmDelete, setConfirmDelete] = React.useState(false)
+  const [deleteLoading, setDeleteLoading] = React.useState(false)
   const { logGroup, refreshFun, region, profile } = React.useContext(LogGroupContext)
   const navigate = useNavigate()
   const handleExportClick = React.useCallback(
@@ -70,6 +71,26 @@ const LogGroupDetail = () => {
     }
   }, [])
 
+  const deleteLogGroup = React.useCallback(
+    (logGroupName: string) => {
+      setDeleteLoading(true)
+      try {
+        window.electronApi
+          .invoke('DeleteLogGroupCommand', {
+            logGroupName: logGroupName,
+          })
+          .then((res) => {
+            console.log('res=====>', res)
+            refreshFun(region, profile)
+            setConfirmDelete(false)
+            setDeleteLoading(false)
+          })
+      } catch {
+        setDeleteLoading(false)
+      }
+    },
+    [profile, refreshFun, region],
+  )
   const debouncedFunction = debounce(fetchLogStreams, 300)
   const handleOnchange = (event) => {
     const searchInput = event?.target?.value
@@ -231,9 +252,9 @@ const LogGroupDetail = () => {
         <Modal
           closeModel={() => setConfirmDelete(false)}
           onConfirm={() => {
-            setConfirmDelete(false)
-            refreshFun(region, profile)
+            deleteLogGroup(logGroup?.logGroupName)
           }}
+          isLoading={deleteLoading}
           title={`Are you sure you want to delete the log-stream ?`}
           subTitle={`Log-Group : ${logGroup.logGroupName}`}
         />
