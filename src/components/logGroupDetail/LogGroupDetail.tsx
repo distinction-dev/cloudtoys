@@ -2,11 +2,11 @@ import React, { Suspense } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { BsDatabaseDown, BsCalendar4, BsTag } from 'react-icons/bs'
+import { TfiReload } from 'react-icons/tfi'
 import { GrResources } from 'react-icons/gr'
 import { MdStorage, MdOutlineContentCopy } from 'react-icons/md'
 import { LuFilter } from 'react-icons/lu'
 import Accordion from '../../infrastructure/common/accordion/Accordion'
-import { logGroupContext } from '../../infrastructure/contextProviders/logGroupProvider'
 import { ImSpinner2 } from 'react-icons/im'
 import { debounce } from '../../infrastructure/utils/debounce'
 import Modal from '../../infrastructure/common/modal/Modal'
@@ -201,13 +201,24 @@ const LogGroupDetail = () => {
           defaultOpen={true}
           className="rounded h-full overflow-hidden"
           bodyClasses="overflow-y-auto overflow-x-hidden pr-2 shadow-inner"
-          leftAdornment={
-            <input
-              type="text"
-              placeholder="Search..."
-              onChange={handleOnchange}
-              className="w-full font-mono focus:outline-none bg-white shadow-sm shadow-black/10 hover:bg-white/70 font-semibold py-1 m-1 mx-2 px-3  hover:border-transparent rounded-2xl"
-            />
+          rightAdornment={
+            <div className="flex justify-between items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                onChange={handleOnchange}
+                className="w-full font-mono focus:outline-none bg-white shadow-sm shadow-black/10 hover:bg-white/70 font-semibold py-1 m-1 mx-2 px-3  hover:border-transparent rounded-2xl"
+              />
+              <button
+                className="appearance-none bg-transparent border-none focus:outline-none p-2 rounded-xl hover:bg-slate-500 
+                hover:text-white font-bold active:text-white/80"
+                onClick={() => {
+                  fetchLogStreams(query.get('logGroupName') as string)
+                }}
+              >
+                <TfiReload className={`w-4 h-4 `} />
+              </button>
+            </div>
           }
         >
           <>
