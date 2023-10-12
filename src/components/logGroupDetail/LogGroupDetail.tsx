@@ -117,14 +117,14 @@ const LogGroupDetail = () => {
                   e.stopPropagation()
                   setConfirmDelete(true)
                 }}
-                className="focus:outline-none bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-1 m-1 px-3 border border-red-500 hover:border-transparent rounded-2xl flex items-center justify-between"
+                className="hover:text-white transition-transform transform hover:scale-105 ease-out duration-400 focus:outline-none bg-transparent hover:bg-red-500 text-red-700 font-semibold  py-1 m-1 px-3 border border-red-500 hover:border-transparent rounded-2xl flex items-center justify-between"
               >
                 <AiOutlineDelete />
                 &nbsp;Delete Log Group
               </button>
               <button
                 onClick={handleExportClick}
-                className="focus:outline-none bg-slate-500 hover:bg-slate-600 text-white font-semibold hover:text-white py-1 m-1 px-3 border border-slate-500 hover:border-transparent rounded-2xl flex items-center justify-between"
+                className="transition-transform transform hover:scale-105 ease-out duration-500 focus:outline-none bg-slate-500 hover:bg-slate-600 text-white font-semibold hover:text-white py-1 m-1 px-3 border border-slate-500 hover:border-transparent rounded-2xl flex items-center justify-between"
               >
                 <BsDatabaseDown />
                 &nbsp;Export To S3
@@ -211,7 +211,7 @@ const LogGroupDetail = () => {
               />
               <button
                 className="appearance-none bg-transparent border-none focus:outline-none p-2 rounded-xl hover:bg-slate-500 
-                hover:text-white font-bold active:text-white/80"
+                hover:text-white font-bold active:text-white/80 transition-transform transform hover:scale-105 ease-out duration-500"
                 onClick={() => {
                   fetchLogStreams(query.get('logGroupName') as string)
                 }}
@@ -237,7 +237,7 @@ const LogGroupDetail = () => {
                         key={logStream?.arn + '_' + index}
                         title={<h6 className="font-mono text-base">{logStream?.logStreamName}</h6>}
                         className={`m-1 p-1 rounded`}
-                        headerClasses="bg-black/10 rounded-b-none text-base"
+                        headerClasses="bg-black/10 rounded-b-none text-base "
                         bodyClasses="bg-black/5 rounded-t-none"
                       >
                         <Suspense>

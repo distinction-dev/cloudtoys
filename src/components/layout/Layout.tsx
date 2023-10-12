@@ -35,6 +35,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [clients, setClients] = React.useState([])
   const [region, setRegion] = React.useState(REGIONS_ENUMS[0])
   const [profile, setProfile] = React.useState('')
+  const [show, setShow] = React.useState(false)
 
   const [loading, setLoading] = React.useState(false)
   const [logGroupLoading, setLogGroupLoading] = React.useState(false)
@@ -63,6 +64,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const fetchLogs = React.useCallback(
     (logGroupNamePattern?: string) => {
       console.log('resresresres ccccc')
+      setShow(false)
       setLogGroupLoading(true)
       try {
         window.electronApi
@@ -75,6 +77,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             if (res?.logGroups?.length) {
               handleClick(res?.logGroups[0])
               setLogs({ ...res, rawValue: res?.logGroups })
+              setTimeout(() => {
+                setShow(true)
+              }, 0)
             } else {
               setLogs()
               handleClick()
@@ -104,11 +109,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     [fetchLogs],
   )
 
-  const debouncedFunction = debounce(fetchLogs, 300)
   const handleOnchange = (event) => {
     const searchInput = event?.target?.value
     if (searchInput) {
-      debouncedFunction(searchInput)
+      debounce(fetchLogs, 300)(searchInput)
     } else {
       fetchLogs()
     }
@@ -217,7 +221,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   type="text"
                   placeholder="Search..."
                   onChange={handleOnchange}
-                  className="w-full p-1 px-2 bg-secondary-100 rounded-full text-black/90 font-mono focus:outline-none"
+                  className="transition-transform transform hover:scale-y-110 ease-out duration-500 w-full p-1 px-2 bg-secondary-100 rounded-full text-black/90 font-mono focus:outline-none"
                 />
               </div>
               <div className="overflow-y-auto flex-grow w-full p-1 shadow-inner ">
@@ -235,8 +239,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         <Tooltip key={`loggroup_${item?.creationTime}_${index}`} message={item?.logGroupName}>
                           <li
                             role="button"
-                            className={`p-1 m-1 hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
-                           ${item?.arn === logGroup?.arn ? 'bg-black/5 text-primary-700' : 'text-secondary-700'} `}
+                            className={`p-1 m-1 w-full hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
+                           ${item?.arn === logGroup?.arn ? 'bg-black/5 text-primary-700' : 'text-secondary-700'} 
+                             hover:scale-105 ease-out
+                           `}
+                            style={{
+                              transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
+                              transform: show ? 'translateX(0)' : `translateX(-${25 * (index + 1)}%)`,
+                              opacity: show ? 1 : 0,
+                              animation: show ? 'enterFromLeft 0.3s ease-in-out' : '',
+                              animationDelay: `0.${index + 3}s`,
+                            }}
                             key={`loggroup_${item?.creationTime}_${index}`}
                             onClick={() => handleClick(item)}
                           >
