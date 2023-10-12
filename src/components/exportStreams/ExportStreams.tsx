@@ -2,12 +2,10 @@ import React, { useState } from 'react'
 import Accordion from '../../infrastructure/common/accordion/Accordion'
 import { MdOutlineArrowBack, MdCalendarMonth } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
-import { logGroupContext } from '../../infrastructure/contextProviders/logGroupProvider'
 type Props = {}
 
 const ExportStreams = (props: Props) => {
   const navigate = useNavigate()
-  const { logGroup } = React.useContext(logGroupContext)
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
   const [startHour, setStartHour] = useState(0)
