@@ -37,6 +37,7 @@ const LogGroupDetail = () => {
   const [logStreamLoading, setLogStreamLoading] = React.useState(false)
   const [confirmDelete, setConfirmDelete] = React.useState(false)
   const [deleteLoading, setDeleteLoading] = React.useState(false)
+
   const { logGroup, refreshFun, region, profile } = React.useContext(LogGroupContext)
   const navigate = useNavigate()
   const handleExportClick = React.useCallback(
@@ -48,6 +49,29 @@ const LogGroupDetail = () => {
   )
   const query = useQuery()
   const fetchLogStreams = React.useCallback((logGroupName: string, logStreamNamePrefix?: string) => {
+    setLogStreamLoading(true)
+    try {
+      window.electronApi
+        .invoke('DescribeLogStreamsCommand', {
+          logGroupName: logGroupName,
+          // {
+          descending: true,
+          limit: 50,
+
+          filterExpiredLogStreams: true,
+          ...(logStreamNamePrefix ? { logStreamNamePrefix: logStreamNamePrefix } : { orderBy: 'LastEventTime' }),
+          // logGroupName: '/aws/lambda/ProvisionConcurrenyDemo',
+          // }
+        })
+        .then((res) => {
+          res && setLogStreams(res)
+          setLogStreamLoading(false)
+        })
+    } catch {
+      setLogStreamLoading(false)
+    }
+  }, [])
+  const debounceFetchLogStreams = React.useCallback((logGroupName: string, logStreamNamePrefix?: string) => {
     setLogStreamLoading(true)
     try {
       window.electronApi
@@ -91,11 +115,11 @@ const LogGroupDetail = () => {
     },
     [profile, refreshFun, region],
   )
-  const debouncedFunction = debounce(fetchLogStreams, 300)
+
   const handleOnchange = (event) => {
     const searchInput = event?.target?.value
     if (searchInput) {
-      debouncedFunction(query.get('logGroupName') as string, searchInput)
+      debounce(debounceFetchLogStreams, 300)(query.get('logGroupName') as string, searchInput)
     } else {
       fetchLogStreams(query.get('logGroupName') as string)
     }

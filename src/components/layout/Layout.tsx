@@ -100,6 +100,45 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     },
     [handleClick, navigate],
   )
+  const fetchLogsDebounce = React.useCallback(
+    (logGroupNamePattern?: string) => {
+      console.log('resresresres ccccc')
+      setShow(false)
+      setLogGroupLoading(true)
+      try {
+        window.electronApi
+          .invoke('DescribeLogGroupsCommand', {
+            showSubscriptionDestinations: true,
+            ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
+          })
+          .then((res) => {
+            console.log('resresresres', res)
+            if (res?.logGroups?.length) {
+              handleClick(res?.logGroups[0])
+              setLogs({ ...res, rawValue: res?.logGroups })
+              setTimeout(() => {
+                setShow(true)
+              }, 0)
+            } else {
+              setLogs()
+              handleClick()
+            }
+            setLoading(false)
+            setLogGroupLoading(false)
+          })
+          .catch((err) => {
+            navigate(`/home?message=Something went wrong with this profile!`)
+            setLogs()
+            setLoading(false)
+            setLogGroupLoading(false)
+          })
+      } catch (err) {
+        setLoading(false)
+        setLogGroupLoading(false)
+      }
+    },
+    [handleClick, navigate],
+  )
   const initClients = React.useCallback(
     (region?: string, profile?: string) => {
       window.electronApi.invoke('initClient', { region: region, ...(profile && { profile: profile }) }).then((res) => {
@@ -112,7 +151,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const handleOnchange = (event) => {
     const searchInput = event?.target?.value
     if (searchInput) {
-      debounce(fetchLogs, 300)(searchInput)
+      debounce(fetchLogsDebounce, 300)(searchInput)
     } else {
       fetchLogs()
     }
