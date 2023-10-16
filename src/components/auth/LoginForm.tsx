@@ -4,7 +4,6 @@ import { useAuth } from '../../infrastructure/authentication/authContext'
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth()
-  console.log('loginloginlogin', login)
   return (
     <AuthPage>
       <div className="xl:col-span-3 lg:col-span-2 lg:mx-10 my-auto text-sky-700">

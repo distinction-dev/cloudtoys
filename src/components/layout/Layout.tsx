@@ -82,7 +82,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const fetchLogs = React.useCallback(
     (logGroupNamePattern?: string) => {
-      console.log('resresresres ccccc')
       setShow(false)
       setLogGroupLoading(true)
       try {
@@ -92,7 +91,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
           })
           .then((res: { logGroups: LogGroup[] }) => {
-            console.log('resresresres', res)
             if (res?.logGroups?.length) {
               handleClick(res?.logGroups[0])
               setLogs({ ...res, rawValue: res?.logGroups })
@@ -121,7 +119,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   )
   const fetchLogsDebounce = React.useCallback(
     (logGroupNamePattern?: string) => {
-      console.log('resresresres ccccc')
       setShow(false)
       setLogGroupLoading(true)
       try {
@@ -131,7 +128,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
           })
           .then((res: { logGroups: LogGroup[] }) => {
-            console.log('resresresres', res)
             if (res?.logGroups?.length) {
               handleClick(res?.logGroups[0])
               setLogs({ ...res, rawValue: res?.logGroups })

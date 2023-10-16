@@ -28,7 +28,7 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
           //   startFromHead: false,
           // },
           {
-            limit: 200,
+            limit: 50,
             logGroupName: logGroupName,
             logStreamName: logStreamName,
             ...(nextToken && { nextToken: nextToken }),
