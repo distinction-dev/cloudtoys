@@ -2,10 +2,10 @@ import { loadSharedConfigFiles, DEFAULT_PROFILE, ENV_PROFILE } from '@smithy/sha
 
 export default {
   /**
-   * @param params optional 
+   * @param params optional
    * @returns returns stored configs and credentials
    */
-  getConfigs(params?: object) {
+  getConfigs() {
     return loadSharedConfigFiles({ ignoreCache: true })
   },
   getDefaultProfile() {

@@ -1,4 +1,4 @@
-const { fromIni, fromSSO } = require('@aws-sdk/credential-providers')
+const { fromIni } = require('@aws-sdk/credential-providers')
 
 const { CloudWatchLogsClient } = require('@aws-sdk/client-cloudwatch-logs')
 

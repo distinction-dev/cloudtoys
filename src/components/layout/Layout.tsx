@@ -5,8 +5,27 @@ import { ImSpinner2 } from 'react-icons/im'
 import { debounce } from '../../infrastructure/utils/debounce'
 import LogGroupSkeleton from '../../infrastructure/common/skeletons/LogGroupSkeleton'
 import Tooltip from '../../infrastructure/common/tooltip/Tooltip'
+import { LogGroup } from '../../utils/interfaces/LogGroup'
 
-export const LogGroupContext = React.createContext(null)
+type LogGroupContextType = {
+  refreshFun: (region?: string, profile?: string) => void // Example type for refreshFun
+  logGroup: LogGroup
+  setLogGroup: (logGroup: string) => void
+  profile: string
+  region: string
+}
+
+type LogsState = {
+  logGroups?: LogGroup[]
+  rawValue?: LogGroup[]
+}
+export const LogGroupContext = React.createContext<LogGroupContextType>({
+  refreshFun: () => null,
+  logGroup: {},
+  setLogGroup: (logGroup: string) => logGroup,
+  profile: '',
+  region: '',
+})
 
 const REGIONS_ENUMS = [
   'eu-north-1',
@@ -30,8 +49,8 @@ const REGIONS_ENUMS = [
 ]
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [logs, setLogs] = React.useState({})
-  const [logGroup, setLogGroup] = React.useState(null)
+  const [logs, setLogs] = React.useState<LogsState>({})
+  const [logGroup, setLogGroup] = React.useState<LogGroup>({})
   const [clients, setClients] = React.useState([])
   const [region, setRegion] = React.useState(REGIONS_ENUMS[0])
   const [profile, setProfile] = React.useState('')
@@ -42,7 +61,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const navigate = useNavigate()
   const handleClick = React.useCallback(
-    (logGroup?: unknown) => {
+    (logGroup?: LogGroup) => {
       if (logGroup) {
         setLogGroup(logGroup)
         navigate(`/log-group?logGroupName=${logGroup?.logGroupName}`)
@@ -54,9 +73,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   )
 
   const fetchClients = () => {
-    window.electronApi.invoke('getConfigs').then((res) => {
+    window.electronApi.invoke('getConfigs').then((res: { credentialsFile: object }) => {
       if (res?.credentialsFile && Object.keys(res?.credentialsFile)?.length) {
-        setClients(Object.keys(res?.credentialsFile))
+        setClients(Object.keys(res?.credentialsFile) as never[])
       }
     })
   }
@@ -72,7 +91,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             showSubscriptionDestinations: true,
             ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
           })
-          .then((res) => {
+          .then((res: { logGroups: LogGroup[] }) => {
             console.log('resresresres', res)
             if (res?.logGroups?.length) {
               handleClick(res?.logGroups[0])
@@ -81,15 +100,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 setShow(true)
               }, 0)
             } else {
-              setLogs()
+              setLogs({})
               handleClick()
             }
             setLoading(false)
             setLogGroupLoading(false)
           })
-          .catch((err) => {
+          .catch(() => {
             navigate(`/home?message=Something went wrong with this profile!`)
-            setLogs()
+            setLogs({})
             setLoading(false)
             setLogGroupLoading(false)
           })
@@ -111,7 +130,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             showSubscriptionDestinations: true,
             ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
           })
-          .then((res) => {
+          .then((res: { logGroups: LogGroup[] }) => {
             console.log('resresresres', res)
             if (res?.logGroups?.length) {
               handleClick(res?.logGroups[0])
@@ -120,15 +139,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 setShow(true)
               }, 0)
             } else {
-              setLogs()
+              setLogs({})
               handleClick()
             }
             setLoading(false)
             setLogGroupLoading(false)
           })
-          .catch((err) => {
+          .catch(() => {
             navigate(`/home?message=Something went wrong with this profile!`)
-            setLogs()
+            setLogs({})
             setLoading(false)
             setLogGroupLoading(false)
           })
@@ -141,15 +160,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   )
   const initClients = React.useCallback(
     (region?: string, profile?: string) => {
-      window.electronApi.invoke('initClient', { region: region, ...(profile && { profile: profile }) }).then((res) => {
+      window.electronApi.invoke('initClient', { region: region, ...(profile && { profile: profile }) }).then(() => {
         fetchLogs()
       })
     },
     [fetchLogs],
   )
 
-  const handleOnchange = (event) => {
-    const searchInput = event?.target?.value
+  const handleOnchange = (e: { target: { value: string } }) => {
+    const searchInput = e?.target?.value
     if (searchInput) {
       debounce(fetchLogsDebounce, 300)(searchInput)
     } else {
@@ -157,11 +176,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const handleRegionChange = (e) => {
-    setRegion(e.target.value)
-    initClients(e.target.value, profile)
+  const handleRegionChange = (e: { target: { value: string } }) => {
+    setRegion(e?.target?.value)
+    initClients(e?.target?.value, profile)
   }
-  const handleProfileChange = (e) => {
+  const handleProfileChange = (e: { target: { value: string } }) => {
     setProfile(e.target.value)
     initClients(region, e.target.value)
   }
@@ -185,7 +204,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [initClients, logGroup, profile, region])
   return (
-    <LogGroupContext.Provider value={logGroupContextValue}>
+    <LogGroupContext.Provider value={logGroupContextValue as LogGroupContextType}>
       <div className="flex flex-col">
         <header className="bg-primary-500 shrink-0 h-10 flex justify-end items-center font-mono ">
           <div className="border-white/75 border-l border-solid p-2">
@@ -264,7 +283,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 />
               </div>
               <div className="overflow-y-auto flex-grow w-full p-1 shadow-inner ">
-                <ul className="font-mono">
+                <div className="font-mono">
                   {logGroupLoading &&
                     Array(12)
                       .fill('logGroup')
@@ -275,9 +294,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     logs?.logGroups?.map((item: LogGroup, index: number) => {
                       return (
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-                        <Tooltip key={`loggroup_${item?.creationTime}_${index}`} message={item?.logGroupName}>
-                          <li
+                        <Tooltip key={`loggroup_${item?.creationTime}_${index}`} message={item?.logGroupName as string}>
+                          <div
                             role="button"
+                            tabIndex={-1}
+                            onClick={() => handleClick(item)}
                             className={`p-1 m-1 w-full hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
                            ${item?.arn === logGroup?.arn ? 'bg-black/5 text-primary-700' : 'text-secondary-700'} 
                              hover:scale-105 ease-out
@@ -290,17 +311,22 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                               animationDelay: `0.${index + 3}s`,
                             }}
                             key={`loggroup_${item?.creationTime}_${index}`}
-                            onClick={() => handleClick(item)}
                           >
-                            {item?.logGroupName}
-                          </li>
+                            <span
+                              className={`
+                             hover:scale-105 ease-in
+                           `}
+                            >
+                              {item?.logGroupName}
+                            </span>
+                          </div>
                         </Tooltip>
                       )
                     })
                   ) : (
-                    <li className="w-full text-center">No Data Available!</li>
+                    <div className="w-full text-center">No Data Available!</div>
                   )}
-                </ul>
+                </div>
               </div>
             </div>
             <div className="bg-secondary-200 p-1 font-mono flex justify-between items-center text-sm text-black/60 font-semibold w-full">

@@ -1,10 +1,8 @@
-
-
 const module = require('@aws-sdk/client-cloudwatch-logs')
 
-import {initAWSClient, getAWSClient} from './client'
+import { initAWSClient } from './client'
 
-let _client: { send: (arg0: any) => any; }
+let _client: { send: (arg0: any) => any }
 
 const _services: any = {
   initClient(args: { region: string; profile?: string | undefined }) {

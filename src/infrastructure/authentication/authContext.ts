@@ -3,8 +3,8 @@ import React from 'react'
 export type AuthProviderValue = {
   user?: boolean
   setUser?: React.Dispatch<React.SetStateAction<boolean>>
-  login?: any
-  logout?: any
+  login?: () => void
+  logout?: () => void
 }
 const AuthContext = React.createContext<AuthProviderValue>({
   user: false,

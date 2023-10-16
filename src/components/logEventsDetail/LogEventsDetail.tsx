@@ -4,8 +4,13 @@ import { BiSolidRightArrow, BiSolidDownArrow } from 'react-icons/bi'
 import { ImSpinner2 } from 'react-icons/im'
 
 let count = 0
+
+type logEventType = {
+  timestamp?: string
+  message?: string
+}
 const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string; logStreamName: string }) => {
-  const [logEvents, setLogEvents] = React.useState([])
+  const [logEvents, setLogEvents] = React.useState<{ events?: logEventType[]; nextBackwardToken?: string }>({})
   const [logEventLoading, setLogEventLoading] = React.useState(false)
 
   const fetchLogsEvent = React.useCallback((logStreamName: string, logGroupName: string, nextToken?: string) => {
@@ -30,7 +35,7 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
             startFromHead: true,
           },
         )
-        .then((res) => {
+        .then((res: { events: []; nextBackwardToken: string }) => {
           if (!res?.events?.length && count < 2 && res?.nextBackwardToken) {
             fetchLogsEvent(logStreamName, logGroupName, res?.nextBackwardToken)
           } else {
@@ -87,7 +92,7 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
                       <button
                         className="absolute right-0 bottom-0 bg-transparent hover:bg-slate-500 text-slate-400 font-semibold hover:text-white py-1 m-1 px-3 border border-slate-400 hover:border-transparent rounded flex items-center justify-between"
                         onClick={() => {
-                          navigator.clipboard.writeText(event?.message)
+                          navigator.clipboard.writeText(event?.message as string)
                         }}
                       >
                         Copy

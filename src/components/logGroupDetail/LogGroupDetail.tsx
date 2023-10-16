@@ -11,12 +11,17 @@ import { ImSpinner2 } from 'react-icons/im'
 import { debounce } from '../../infrastructure/utils/debounce'
 import Modal from '../../infrastructure/common/modal/Modal'
 import { LogGroupContext } from '../layout/Layout'
+import { LogStream } from '../../utils/interfaces/LogStream'
 
+type LogsStreamState = {
+  logStreams?: LogStream[]
+  rawValue?: LogStream[]
+}
 const LogEventsDetail = React.lazy(() => import('../logEventsDetail/LogEventsDetail'))
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 
-function formatBytes(bytes, decimals = 2) {
+function formatBytes(bytes: number, decimals = 2) {
   if (!+bytes) return '0 Bytes'
 
   const k = 1024
@@ -33,7 +38,7 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search])
 }
 const LogGroupDetail = () => {
-  const [logStreams, setLogStreams] = React.useState([])
+  const [logStreams, setLogStreams] = React.useState<LogsStreamState>({})
   const [logStreamLoading, setLogStreamLoading] = React.useState(false)
   const [confirmDelete, setConfirmDelete] = React.useState(false)
   const [deleteLoading, setDeleteLoading] = React.useState(false)
@@ -41,7 +46,7 @@ const LogGroupDetail = () => {
   const { logGroup, refreshFun, region, profile } = React.useContext(LogGroupContext)
   const navigate = useNavigate()
   const handleExportClick = React.useCallback(
-    (e) => {
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       navigate(`/export-streams`)
     },
@@ -63,7 +68,7 @@ const LogGroupDetail = () => {
           // logGroupName: '/aws/lambda/ProvisionConcurrenyDemo',
           // }
         })
-        .then((res) => {
+        .then((res: LogsStreamState) => {
           res && setLogStreams(res)
           setLogStreamLoading(false)
         })
@@ -86,7 +91,7 @@ const LogGroupDetail = () => {
           // logGroupName: '/aws/lambda/ProvisionConcurrenyDemo',
           // }
         })
-        .then((res) => {
+        .then((res: LogsStreamState) => {
           res && setLogStreams(res)
           setLogStreamLoading(false)
         })
@@ -103,8 +108,7 @@ const LogGroupDetail = () => {
           .invoke('DeleteLogGroupCommand', {
             logGroupName: logGroupName,
           })
-          .then((res) => {
-            console.log('res=====>', res)
+          .then(() => {
             refreshFun(region, profile)
             setConfirmDelete(false)
             setDeleteLoading(false)
@@ -116,7 +120,7 @@ const LogGroupDetail = () => {
     [profile, refreshFun, region],
   )
 
-  const handleOnchange = (event) => {
+  const handleOnchange = (event: { target: { value: string } }) => {
     const searchInput = event?.target?.value
     if (searchInput) {
       debounce(debounceFetchLogStreams, 300)(query.get('logGroupName') as string, searchInput)
@@ -135,20 +139,20 @@ const LogGroupDetail = () => {
           bodyClasses="bg-white p-4"
           defaultOpen={true}
           rightAdornment={
-            <div className="flex items-center">
+            <div className="flex items-center flex-wrap">
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   setConfirmDelete(true)
                 }}
-                className="hover:text-white transition-transform transform hover:scale-105 ease-out duration-400 focus:outline-none bg-transparent hover:bg-red-500 text-red-700 font-semibold  py-1 m-1 px-3 border border-red-500 hover:border-transparent rounded-2xl flex items-center justify-between"
+                className="hover:text-white transition-transform transform hover:scale-105 ease-out duration-400 focus:outline-none bg-transparent hover:bg-red-500 text-red-700 font-semibold  py-1 m-1 px-3 border border-red-500 hover:border-transparent rounded-2xl flex items-center justify-between  whitespace-nowrap overflow-hidden text-ellipsis "
               >
                 <AiOutlineDelete />
                 &nbsp;Delete Log Group
               </button>
               <button
                 onClick={handleExportClick}
-                className="transition-transform transform hover:scale-105 ease-out duration-500 focus:outline-none bg-slate-500 hover:bg-slate-600 text-white font-semibold hover:text-white py-1 m-1 px-3 border border-slate-500 hover:border-transparent rounded-2xl flex items-center justify-between"
+                className="transition-transform transform hover:scale-105 ease-out duration-500 focus:outline-none bg-slate-500 hover:bg-slate-600 text-white font-semibold hover:text-white py-1 m-1 px-3 border border-slate-500 hover:border-transparent rounded-2xl flex items-center justify-between  whitespace-nowrap overflow-hidden text-ellipsis "
               >
                 <BsDatabaseDown />
                 &nbsp;Export To S3
@@ -156,48 +160,48 @@ const LogGroupDetail = () => {
             </div>
           }
         >
-          <div className="flex flex-col justify-between items-between">
+          <div className="flex flex-col justify-between items-between overflow-hidden text-ellipsis ">
             <div className="py-1 m-1 whitespace-nowrap overflow-hidden text-ellipsis font-bold flex justify-start items-center relative">
               <GrResources className={'opacity-80'} />
               &nbsp;ARN : {logGroup?.arn ?? ''}
               <button
-                className="focus:outline-none bg-transparent border-none absolute right-0 p-1 m-2 hover:bg-secondary-200 active:bg-secondary-300 rounded-md"
+                className="focus:outline-none bg-white border-none absolute right-0 p-1 m-0 hover:bg-secondary-200 active:bg-secondary-300 rounded-md"
                 onClick={() => {
-                  navigator.clipboard.writeText(logGroup?.arn)
+                  navigator.clipboard.writeText(logGroup?.arn as string)
                 }}
               >
                 <MdOutlineContentCopy className={'w-4 h-4'} />
               </button>
             </div>
-            <div className="flex justify-between items-start w-full">
+            <div className="flex justify-between items-start w-full flex-wrap">
               <div className="flex flex-col justify-center items-between">
-                <div className="flex justify-start items-center m-1">
+                <div className="flex justify-start items-center m-1 whitespace-nowrap">
                   <BsCalendar4 className={'opacity-80'} />
                   &nbsp;Created ON : {logGroup?.creationTime ? new Date(logGroup?.creationTime).toDateString() : '-'}
                 </div>
-                <div className="flex justify-start items-center m-1">
+                <div className="flex justify-start items-center m-1  whitespace-nowrap">
                   <LuFilter className={'opacity-80'} />
                   &nbsp;Metric Filters : {logGroup?.metricFilterCount || 0}
                 </div>
               </div>
               <div className="flex flex-col justify-center items-between">
-                <div className="flex justify-start items-center m-1">
+                <div className="flex justify-start items-center m-1  whitespace-nowrap">
                   <BsCalendar4 className={'opacity-80'} />
                   &nbsp;Expired : -
                 </div>
-                <div className="flex justify-start items-center m-1">
+                <div className="flex justify-start items-center m-1  whitespace-nowrap">
                   <LuFilter className={'opacity-80'} />
                   &nbsp;Subscription Filters : {logGroup?.subscriptionFilterCount || 0}
                 </div>
               </div>
               <div className="flex flex-col justify-center items-between">
-                <div className="flex justify-start items-center m-1">
+                <div className="flex justify-start items-center m-1  whitespace-nowrap">
                   <MdStorage className={'opacity-80'} />
                   &nbsp;Storage : {logGroup?.storedBytes ? formatBytes(logGroup?.storedBytes, 2) : 0}
                 </div>
               </div>
             </div>
-            <div className="flex justify-start items-center p-1 m-1">
+            <div className="flex justify-start items-center p-1 m-1  whitespace-nowrap">
               <BsTag className={'opacity-80'} />
               &nbsp;Tags : -
             </div>
@@ -255,7 +259,7 @@ const LogGroupDetail = () => {
             ) : (
               <>
                 {logStreams?.logStreams?.length ? (
-                  logStreams?.logStreams?.map((logStream, index) => {
+                  logStreams?.logStreams?.map((logStream, index: number) => {
                     return (
                       <Accordion
                         key={logStream?.arn + '_' + index}
@@ -266,7 +270,7 @@ const LogGroupDetail = () => {
                       >
                         <Suspense>
                           <LogEventsDetail
-                            logStreamName={logStream?.logStreamName}
+                            logStreamName={logStream?.logStreamName as string}
                             logGroupName={query.get('logGroupName') as string}
                           />
                         </Suspense>
@@ -287,7 +291,7 @@ const LogGroupDetail = () => {
         <Modal
           closeModel={() => setConfirmDelete(false)}
           onConfirm={() => {
-            deleteLogGroup(logGroup?.logGroupName)
+            deleteLogGroup(logGroup?.logGroupName as string)
           }}
           isLoading={deleteLoading}
           title={`Are you sure you want to delete the log-stream ?`}

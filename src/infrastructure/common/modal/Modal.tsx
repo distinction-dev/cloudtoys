@@ -1,19 +1,14 @@
 import React from 'react'
 import { ImSpinner2 } from 'react-icons/im'
 
-const Modal = ({
-  closeModel,
-  onConfirm,
-  title,
-  subTitle,
-  isLoading,
-}: {
-  closeModel: any
-  onConfirm: any
+type Props = {
+  closeModel: () => void
+  onConfirm: () => void
   title: string
   subTitle?: string
   isLoading?: boolean
-}) => {
+}
+const Modal: React.FC<Props> = ({ closeModel, onConfirm, title, subTitle, isLoading }: Props) => {
   return (
     <>
       <div

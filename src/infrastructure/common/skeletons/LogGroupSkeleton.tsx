@@ -1,9 +1,7 @@
 import React from 'react'
 import Accordion from '../accordion/Accordion'
 
-type Props = {}
-
-const LogGroupSkeleton = (props: Props) => {
+const LogGroupSkeleton: React.FC = () => {
   return (
     <div className="flex flex-col justify-start items-start h-full">
       <Accordion

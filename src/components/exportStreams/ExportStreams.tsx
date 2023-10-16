@@ -1,43 +1,44 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react'
 import Accordion from '../../infrastructure/common/accordion/Accordion'
 import { MdOutlineArrowBack, MdCalendarMonth } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { LogGroupContext } from '../layout/Layout'
-type Props = {}
 
-const ExportStreams = (props: Props) => {
+const ExportStreams = () => {
   const { logGroup } = React.useContext(LogGroupContext)
 
   const navigate = useNavigate()
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(null)
-  const [startHour, setStartHour] = useState(0)
-  const [startMinute, setStartMinute] = useState(0)
-  const [endHour, setEndHour] = useState(0)
-  const [endMinute, setEndMinute] = useState(0)
+  const [startDate, setStartDate] = useState<string | number>(0)
+  const [endDate, setEndDate] = useState<string | number>(0)
+  const [startHour, setStartHour] = useState<string | number>(0)
+  const [startMinute, setStartMinute] = useState<string | number>(0)
+  const [endHour, setEndHour] = useState<string | number>(0)
+  const [endMinute, setEndMinute] = useState<string | number>(0)
 
-  const handleStartDateChange = (e) => {
-    setStartDate(e.target.value)
+  const handleStartMinuteChange = (e: { target: { value: string | number } }) => {
+    setStartMinute(e.target.value)
+  }
+  const handleEndMinuteChange = (e: { target: { value: string | number } }) => {
+    setEndMinute(e.target.value)
+    handleStartMinuteChange(e)
   }
 
-  const handleEndDateChange = (e) => {
+  const handleStartDateChange = (e: { target: { value: string | number } }) => {
+    setStartDate(e.target.value)
+    handleEndMinuteChange({ target: { value: 0 } })
+  }
+
+  const handleEndDateChange = (e: { target: { value: string | number } }) => {
     setEndDate(e.target.value)
   }
 
-  const handleStartHourChange = (e) => {
+  const handleStartHourChange = (e: { target: { value: string | number } }) => {
     setStartHour(e.target.value)
   }
 
-  const handleStartMinuteChange = (e) => {
-    setStartMinute(e.target.value)
-  }
-
-  const handleEndHourChange = (e) => {
+  const handleEndHourChange = (e: { target: { value: string | number } }) => {
     setEndHour(e.target.value)
-  }
-
-  const handleEndMinuteChange = (e) => {
-    setEndMinute(e.target.value)
   }
 
   const dateClases: React.HTMLProps<HTMLElement>['className'] =

@@ -1,8 +1,8 @@
 import React from 'react'
 
-type Props = { handleClose: any }
+type Props = { handleClose: () => void }
 
-const Settings = ({ handleClose }: Props) => {
+const Settings: React.FC<Props> = ({ handleClose }: Props) => {
   return (
     // <div className="relative px-4 min-h-screen md:flex md:items-center md:justify-center">
     <>

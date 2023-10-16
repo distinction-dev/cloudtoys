@@ -8,7 +8,7 @@ type Props = {
   id?: string
 }
 
-const Input = ({ label, placeholder, name, type, id }: Props) => {
+const Input: React.FC<Props> = ({ label, placeholder, name, type, id }: Props) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">

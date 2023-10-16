@@ -5,7 +5,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const Tooltip = ({ message, children }: Props) => {
+const Tooltip: React.FC<Props> = ({ message, children }: Props) => {
   return (
     <div className="group relative flex">
       {children}

@@ -37,6 +37,7 @@ const Accordion = ({
     <div className={`flex flex-col justify-start items-start w-full p-0 font-mono ${className ?? ''}`}>
       {/* Accordion Header */}
       <div
+        tabIndex={0}
         role="button"
         onClick={() => !permanent && handleSetIndex(!active)}
         className={`flex justify-start p-2 rounded w-full ${headerClasses ?? ''}`}

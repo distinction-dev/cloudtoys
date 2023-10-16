@@ -2,7 +2,7 @@ import React from 'react'
 import AuthPage from './AuthPage'
 import { useAuth } from '../../infrastructure/authentication/authContext'
 
-const LoginForm = () => {
+const LoginForm: React.FC = () => {
   const { login } = useAuth()
   console.log('loginloginlogin', login)
   return (
