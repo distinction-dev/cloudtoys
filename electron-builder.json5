@@ -21,9 +21,9 @@
   "win": {
     "target": [
       {
-        "target": "nsis",
+        "target": "portable",
         "arch": [
-          "x64"
+          "arm64", "x64", "ia32"
         ]
       }
     ],
@@ -34,5 +34,13 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
+  },
+  linux: {
+    desktop: {
+      StartupNotify: "false",
+      Encoding: "UTF-8",
+      MimeType: "x-scheme-handler/deeplink"
+    },
+    target: ["AppImage", "deb"]
   }
 }

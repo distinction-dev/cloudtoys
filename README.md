@@ -1,5 +1,7 @@
 # cloudtoys
 
+[![Release](https://github.com/distinction-dev/cloudtoys/actions/workflows/release.yml/badge.svg)](https://github.com/distinction-dev/cloudtoys/actions/workflows/release.yml)
+
 CloudWatch monitoring. Made easy.
 
 ### Development
