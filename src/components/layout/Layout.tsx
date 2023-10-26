@@ -18,6 +18,8 @@ type LogGroupContextType = {
 type LogsState = {
   logGroups?: LogGroup[]
   rawValue?: LogGroup[]
+  nextToken?: string
+  logGroupNamePattern?: string
 }
 export const LogGroupContext = React.createContext<LogGroupContextType>({
   refreshFun: () => null,
@@ -55,8 +57,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [region, setRegion] = React.useState(REGIONS_ENUMS[0])
   const [profile, setProfile] = React.useState('')
   const [show, setShow] = React.useState(false)
-
   const [loading, setLoading] = React.useState(false)
+  const [loadMore, setLoadMore] = React.useState(false)
   const [logGroupLoading, setLogGroupLoading] = React.useState(false)
 
   const navigate = useNavigate()
@@ -81,26 +83,49 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }
 
   const fetchLogs = React.useCallback(
-    (logGroupNamePattern?: string) => {
-      setShow(false)
-      setLogGroupLoading(true)
+    (logGroupNamePattern?: string, nextToken?: string) => {
+      !nextToken && setShow(false)
+      nextToken ? setLoadMore(true) : setLogGroupLoading(true)
       try {
         window.electronApi
           .invoke('DescribeLogGroupsCommand', {
             showSubscriptionDestinations: true,
             ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
+            ...(nextToken && { nextToken: nextToken }),
+            limit: 50,
           })
           .then((res: { logGroups: LogGroup[] }) => {
-            if (res?.logGroups?.length) {
-              handleClick(res?.logGroups[0])
-              setLogs({ ...res, rawValue: res?.logGroups })
+            if (nextToken) {
+              setLogs({
+                ...res,
+                ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
+                logGroups: [
+                  ...(logs.logGroups?.length ? logs.logGroups : []),
+                  ...(res.logGroups?.length ? res.logGroups : []),
+                ],
+                rawValue: [
+                  ...(logs.rawValue?.length ? logs.rawValue : []),
+                  ...(res.logGroups?.length ? res.logGroups : []),
+                ],
+              })
+              setLoadMore(false)
+            } else {
+              if (res?.logGroups?.length) {
+                handleClick(res?.logGroups[0])
+                setLogs({
+                  ...res,
+                  rawValue: res?.logGroups,
+                  ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
+                })
+              } else {
+                setLogs({})
+                handleClick()
+              }
               setTimeout(() => {
                 setShow(true)
               }, 0)
-            } else {
-              setLogs({})
-              handleClick()
             }
+
             setLoading(false)
             setLogGroupLoading(false)
           })
@@ -115,10 +140,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         setLogGroupLoading(false)
       }
     },
-    [handleClick, navigate],
+    [handleClick, logs, navigate],
   )
   const fetchLogsDebounce = React.useCallback(
-    (logGroupNamePattern?: string) => {
+    (logGroupNamePattern?: string, nextToken?: string) => {
       setShow(false)
       setLogGroupLoading(true)
       try {
@@ -126,11 +151,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           .invoke('DescribeLogGroupsCommand', {
             showSubscriptionDestinations: true,
             ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
+            ...(nextToken && { nextToken: nextToken }),
+            limit: 50,
           })
           .then((res: { logGroups: LogGroup[] }) => {
             if (res?.logGroups?.length) {
               handleClick(res?.logGroups[0])
-              setLogs({ ...res, rawValue: res?.logGroups })
+              setLogs({
+                ...res,
+                rawValue: res?.logGroups,
+                ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
+              })
               setTimeout(() => {
                 setShow(true)
               }, 0)
@@ -258,7 +289,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div className="w-64 bg-white flex flex-col justify-start items-start overflow-hidden flex-grow">
               <div className="flex p-1 pl-2 justify-start items-center text-lg font-bold font-mono">
                 <span className="text-black/80">Log Groups</span>
-                {logGroupLoading ? (
+                {loadMore || logGroupLoading ? (
                   <>
                     &nbsp;{' '}
                     <span className="text-secondary-500 ">
@@ -274,20 +305,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <input
                   type="text"
                   placeholder="Search..."
+                  id="logGroupSearch"
                   onChange={handleOnchange}
                   className="transition-transform transform hover:scale-y-110 ease-out duration-500 w-full p-1 px-2 bg-secondary-100 rounded-full text-black/90 font-mono focus:outline-none"
                 />
               </div>
-              <div className="overflow-y-auto flex-grow w-full p-1 shadow-inner ">
-                <div className="font-mono">
-                  {logGroupLoading &&
-                    Array(12)
-                      .fill('logGroup')
-                      .map((item, index: number) => {
-                        return <div key={item + index} className=" animate-pulse bg-gray-200 h-8 rounded-md m-1 "></div>
-                      })}
-                  {!logGroupLoading && logs?.logGroups?.length ? (
-                    logs?.logGroups?.map((item: LogGroup, index: number) => {
+              <div className="overflow-y-auto overflow-x-hidden flex-grow w-full p-1 shadow-inner font-mono ">
+                {/* <div className="font-mono"> */}
+                {!logGroupLoading && logs?.logGroups?.length ? (
+                  <>
+                    {logs?.logGroups?.map((item: LogGroup, index: number) => {
                       return (
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
                         <Tooltip key={`loggroup_${item?.creationTime}_${index}`} message={item?.logGroupName as string}>
@@ -318,14 +345,39 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                           </div>
                         </Tooltip>
                       )
-                    })
-                  ) : (
-                    <div className="w-full text-center">No Data Available!</div>
-                  )}
-                </div>
+                    })}
+                    {!loadMore && !logGroupLoading && logs?.nextToken && (
+                      <div
+                        role="button"
+                        tabIndex={-1}
+                        onClick={() => fetchLogs(logs?.logGroupNamePattern ?? '', logs?.nextToken)}
+                        className="text-blue-500 text-sm hover:text-blue-600 text-center font-mono hover:bg-black/5 rounded"
+                      >
+                        Load More...
+                      </div>
+                    )}
+                    {loadMore && (
+                      <div className="text-blue-500 text-sm hover:text-blue-600 flex justify-center items-center font-mono hover:bg-black/5 rounded text-secondary-500">
+                        <ImSpinner2 className={'animate-spin w-5 h-5'} />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full text-center">No Data Available!</div>
+                )}
+                {(loadMore || logGroupLoading) &&
+                  Array(12)
+                    .fill('logGroup')
+                    .map((item, index: number) => {
+                      return <div key={item + index} className=" animate-pulse bg-gray-200 h-8 rounded-md m-1 "></div>
+                    })}
+                {/* </div> */}
               </div>
             </div>
-            <div className="bg-secondary-200 p-1 font-mono flex justify-between items-center text-sm text-black/60 font-semibold w-full">
+            <div
+              style={{ zIndex: 1 }}
+              className="bg-secondary-200 p-1 font-mono flex justify-between items-center text-sm text-black/60 font-semibold w-full"
+            >
               <span>CloudToys</span>&nbsp;
               <span>version 0.0.1</span>
             </div>
