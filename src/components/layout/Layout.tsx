@@ -2,10 +2,10 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IoRefreshCircle } from 'react-icons/io5'
 import { ImSpinner2 } from 'react-icons/im'
-import { debounce } from '../../infrastructure/utils/debounce'
 import LogGroupSkeleton from '../../infrastructure/common/skeletons/LogGroupSkeleton'
 import Tooltip from '../../infrastructure/common/tooltip/Tooltip'
 import { LogGroup } from '../../utils/interfaces/LogGroup'
+import _ from 'lodash'
 
 type LogGroupContextType = {
   refreshFun: (region?: string, profile?: string) => void // Example type for refreshFun
@@ -142,49 +142,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     },
     [handleClick, logs, navigate],
   )
-  const fetchLogsDebounce = React.useCallback(
-    (logGroupNamePattern?: string, nextToken?: string) => {
-      setShow(false)
-      setLogGroupLoading(true)
-      try {
-        window.electronApi
-          .invoke('DescribeLogGroupsCommand', {
-            showSubscriptionDestinations: true,
-            ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
-            ...(nextToken && { nextToken: nextToken }),
-            limit: 50,
-          })
-          .then((res: { logGroups: LogGroup[] }) => {
-            if (res?.logGroups?.length) {
-              handleClick(res?.logGroups[0])
-              setLogs({
-                ...res,
-                rawValue: res?.logGroups,
-                ...(logGroupNamePattern && { logGroupNamePattern: logGroupNamePattern }),
-              })
-              setTimeout(() => {
-                setShow(true)
-              }, 0)
-            } else {
-              setLogs({})
-              handleClick()
-            }
-            setLoading(false)
-            setLogGroupLoading(false)
-          })
-          .catch(() => {
-            navigate(`/home?message=Something went wrong with this profile!`)
-            setLogs({})
-            setLoading(false)
-            setLogGroupLoading(false)
-          })
-      } catch (err) {
-        setLoading(false)
-        setLogGroupLoading(false)
-      }
-    },
-    [handleClick, navigate],
-  )
   const initClients = React.useCallback(
     (region?: string, profile?: string) => {
       window.electronApi.invoke('initClient', { region: region, ...(profile && { profile: profile }) }).then(() => {
@@ -196,11 +153,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const handleOnchange = (e: { target: { value: string } }) => {
     const searchInput = e?.target?.value
-    if (searchInput) {
-      debounce(fetchLogsDebounce, 300)(searchInput)
-    } else {
-      fetchLogs()
-    }
+    _.debounce(fetchLogs, 600)(searchInput ?? '')
   }
 
   const handleRegionChange = (e: { target: { value: string } }) => {
@@ -317,7 +270,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     {logs?.logGroups?.map((item: LogGroup, index: number) => {
                       return (
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-                        <Tooltip key={`loggroup_${item?.creationTime}_${index}`} message={item?.logGroupName as string}>
+                        <Tooltip
+                          key={`loggroup_${item?.creationTime}_${index}`}
+                          hideOnHover={logs.logGroups && logs.logGroups.length - 1 === index ? false : true}
+                          message={item?.logGroupName as string}
+                        >
                           <div
                             role="button"
                             tabIndex={-1}
@@ -357,7 +314,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                       </div>
                     )}
                     {loadMore && (
-                      <div className="text-blue-500 text-sm hover:text-blue-600 flex justify-center items-center font-mono hover:bg-black/5 rounded text-secondary-500">
+                      <div className="text-sm hover:text-blue-600 flex justify-center items-center font-mono hover:bg-black/5 rounded text-secondary-500">
                         <ImSpinner2 className={'animate-spin w-5 h-5'} />
                       </div>
                     )}

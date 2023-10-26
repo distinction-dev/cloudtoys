@@ -8,11 +8,10 @@ import { MdStorage, MdOutlineContentCopy } from 'react-icons/md'
 import { LuFilter } from 'react-icons/lu'
 import Accordion from '../../infrastructure/common/accordion/Accordion'
 import { ImSpinner2 } from 'react-icons/im'
-import { debounce } from '../../infrastructure/utils/debounce'
 import Modal from '../../infrastructure/common/modal/Modal'
 import { LogGroupContext } from '../layout/Layout'
 import { LogStream } from '../../utils/interfaces/LogStream'
-
+import _ from 'lodash'
 type LogsStreamState = {
   logStreams?: LogStream[]
   rawValue?: LogStream[]
@@ -76,29 +75,6 @@ const LogGroupDetail = () => {
       setLogStreamLoading(false)
     }
   }, [])
-  const debounceFetchLogStreams = React.useCallback((logGroupName: string, logStreamNamePrefix?: string) => {
-    setLogStreamLoading(true)
-    try {
-      window.electronApi
-        .invoke('DescribeLogStreamsCommand', {
-          logGroupName: logGroupName,
-          // {
-          descending: true,
-          limit: 50,
-
-          filterExpiredLogStreams: true,
-          ...(logStreamNamePrefix ? { logStreamNamePrefix: logStreamNamePrefix } : { orderBy: 'LastEventTime' }),
-          // logGroupName: '/aws/lambda/ProvisionConcurrenyDemo',
-          // }
-        })
-        .then((res: LogsStreamState) => {
-          res && setLogStreams(res)
-          setLogStreamLoading(false)
-        })
-    } catch {
-      setLogStreamLoading(false)
-    }
-  }, [])
 
   const deleteLogGroup = React.useCallback(
     (logGroupName: string) => {
@@ -122,11 +98,7 @@ const LogGroupDetail = () => {
 
   const handleOnchange = (event: { target: { value: string } }) => {
     const searchInput = event?.target?.value
-    if (searchInput) {
-      debounce(debounceFetchLogStreams, 300)(query.get('logGroupName') as string, searchInput)
-    } else {
-      fetchLogStreams(query.get('logGroupName') as string)
-    }
+    _.debounce(fetchLogStreams, 600)(query.get('logGroupName') as string, searchInput ?? '')
   }
   React.useEffect(() => {
     fetchLogStreams(query.get('logGroupName') as string)
@@ -228,7 +200,7 @@ const LogGroupDetail = () => {
           permanent={true}
           defaultOpen={true}
           className="rounded h-full overflow-hidden"
-          bodyClasses="overflow-y-auto overflow-x-hidden pr-2 shadow-inner"
+          bodyClasses="overflow-y-auto overflow-x-hidden pr-2"
           rightAdornment={
             <div className="flex justify-between items-center">
               <input
