@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { AiOutlineDelete } from 'react-icons/ai'
-import { BsDatabaseDown, BsCalendar4, BsTag } from 'react-icons/bs'
+import { BsCalendar4, BsTag } from 'react-icons/bs'
 import { TfiReload } from 'react-icons/tfi'
 import { GrResources } from 'react-icons/gr'
 import { MdStorage, MdOutlineContentCopy } from 'react-icons/md'
@@ -43,14 +43,14 @@ const LogGroupDetail = () => {
   const [deleteLoading, setDeleteLoading] = React.useState(false)
 
   const { logGroup, refreshFun, region, profile } = React.useContext(LogGroupContext)
-  const navigate = useNavigate()
-  const handleExportClick = React.useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation()
-      navigate(`/export-streams`)
-    },
-    [navigate],
-  )
+  // const navigate = useNavigate()
+  // const handleExportClick = React.useCallback(
+  //   (e: React.MouseEvent<HTMLButtonElement>) => {
+  //     e.stopPropagation()
+  //     navigate(`/export-streams`)
+  //   },
+  //   [navigate],
+  // )
   const query = useQuery()
   const fetchLogStreams = React.useCallback((logGroupName: string, logStreamNamePrefix?: string) => {
     setLogStreamLoading(true)
