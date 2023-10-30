@@ -122,13 +122,13 @@ const LogGroupDetail = () => {
                 <AiOutlineDelete />
                 &nbsp;Delete Log Group
               </button>
-              <button
+              {/* <button
                 onClick={handleExportClick}
                 className="transition-transform transform hover:scale-105 ease-out duration-500 focus:outline-none bg-slate-500 hover:bg-slate-600 text-white font-semibold hover:text-white py-1 m-1 px-3 border border-slate-500 hover:border-transparent rounded-2xl flex items-center justify-between  whitespace-nowrap overflow-hidden text-ellipsis "
               >
                 <BsDatabaseDown />
                 &nbsp;Export To S3
-              </button>
+              </button> */}
             </div>
           }
         >
