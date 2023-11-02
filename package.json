@@ -6,6 +6,7 @@
     "email": "distinctiondev",
     "name": "distinctiondev"
   },
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder --config electron-builder.json5 --publish always",
