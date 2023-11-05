@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const AuthPage = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -109,18 +109,24 @@ const AuthPage = ({ children }: { children: React.ReactNode }) => {
       "
     >
       <div className="container 2xl:px-80 xl:px-52">
-        <div className=" bg-white/50 rounded-lg p-5" style={{ boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px' }}>
+        <div
+          className=" bg-white/50 rounded-lg p-5"
+          style={{ boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px' }}
+        >
           <div className="grid xl:grid-cols-5 lg:grid-cols-3 gap-6">
             <div className="xl:col-span-2 lg:col-span-1 hidden lg:block">
               <div className="bg-sky-600 text-white rounded-lg flex flex-col justify-between gap-10 h-full w-full p-7">
                 <h1 className="text-3xl/tight mb-4">Cloud Toy</h1>
 
-                <span className="font-semibold tracking-widest uppercase">CloudWatch Monitoring Made easy</span>
+                <span className="font-semibold tracking-widest uppercase">
+                  CloudWatch Monitoring Made easy
+                </span>
 
                 <div>
                   <div className="bg-sky-700/50 rounded-lg p-5">
                     <p className="text-gray-200 text-sm font-normal leading mb-4">
-                      Cloud-Toy can is made for make easy your day to day devOps works.
+                      Cloud-Toy can is made for make easy your day to day devOps
+                      works.
                     </p>
                   </div>
                 </div>
@@ -132,7 +138,7 @@ const AuthPage = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default AuthPage
+export default AuthPage;

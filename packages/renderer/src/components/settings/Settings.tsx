@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-type Props = { handleClose: () => void }
+type Props = { handleClose: () => void };
 
 const Settings: React.FC<Props> = ({ handleClose }: Props) => {
   return (
@@ -28,7 +28,7 @@ const Settings: React.FC<Props> = ({ handleClose }: Props) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Settings
+export default Settings;

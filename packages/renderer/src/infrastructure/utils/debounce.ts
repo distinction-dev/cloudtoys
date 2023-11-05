@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const debounce = <T extends (...args: any[]) => void>(
   func: T,
   wait: number,
@@ -6,6 +7,7 @@ export const debounce = <T extends (...args: any[]) => void>(
   let timeout: NodeJS.Timeout | null;
 
   return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const context = this;
 
     const later = function () {

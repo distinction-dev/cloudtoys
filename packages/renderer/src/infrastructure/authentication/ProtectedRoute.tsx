@@ -1,5 +1,5 @@
-import React from 'react'
-import Layout from '../../components/layout/Layout'
+import React from 'react';
+import Layout from '../../components/layout/Layout';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // const { user } = useAuth() as { user?: boolean }
@@ -7,5 +7,5 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   //   // user is not authenticated
   //   return <Navigate to="/login" />
   // }
-  return <Layout>{children}</Layout>
-}
+  return <Layout>{children}</Layout>;
+};
