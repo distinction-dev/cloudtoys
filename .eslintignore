@@ -1,7 +1,0 @@
-node_modules/
-dist/
-dist-electron/
-.prettierrc.js
-.eslintrc.js
-env.d.ts
-electron/**/*
