@@ -1,35 +1,52 @@
-import * as React from 'react'
-import Accordion from '../../infrastructure/common/accordion/Accordion'
-import { BiSolidRightArrow, BiSolidDownArrow } from 'react-icons/bi'
-import { ImSpinner2 } from 'react-icons/im'
-import { TfiReload } from 'react-icons/tfi'
-import _ from 'lodash'
+import * as React from 'react';
+import Accordion from '../../infrastructure/common/accordion/Accordion';
+import { BiSolidRightArrow, BiSolidDownArrow } from 'react-icons/bi';
+import { ImSpinner2 } from 'react-icons/im';
+import { TfiReload } from 'react-icons/tfi';
+import _ from 'lodash';
 
 // let count = 0
-const logEventFilterPatternRegex = /[^a-zA-Z_0-9]/
+const logEventFilterPatternRegex = /[^a-zA-Z_0-9]/;
 type logEventType = {
-  timestamp?: string
-  message?: string
-}
+  timestamp?: string;
+  message?: string;
+};
 
 type logEventsArrayType = {
-  nextToken?: string
-  events?: logEventType[]
-}
-const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string; logStreamName: string }) => {
-  const [logEvents, setLogEvents] = React.useState<logEventsArrayType>({})
-  const [logEventLoading, setLogEventLoading] = React.useState(false)
+  nextToken?: string;
+  events?: logEventType[];
+};
+const LogEventsDetail = ({
+  logGroupName,
+  logStreamName,
+}: {
+  logGroupName: string;
+  logStreamName: string;
+}) => {
+  const [logEvents, setLogEvents] = React.useState<logEventsArrayType>({});
+  const [logEventLoading, setLogEventLoading] = React.useState(false);
   // const [loading, setLoading] = React.useState(false)
-  const [loadMore, setLoadMore] = React.useState(false)
+  const [loadMore, setLoadMore] = React.useState(false);
   const fetchLogsEvent = React.useCallback(
-    (logStreamName: string, logGroupName: string, nextToken?: string, filterPattern?: string) => {
-      nextToken ? setLoadMore(true) : setLogEventLoading(true)
-      const limit = filterPattern ? 200 : 10
+    (
+      logStreamName: string,
+      logGroupName: string,
+      nextToken?: string,
+      filterPattern?: string
+    ) => {
+      nextToken ? setLoadMore(true) : setLogEventLoading(true);
+      const limit = filterPattern ? 200 : 10;
       try {
-        window.electronApi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).electronApi
           .invoke('FilterLogEventsCommand', {
             limit: limit,
-            ...(filterPattern && { filterPattern: filterPattern.replace(logEventFilterPatternRegex, ' ') }),
+            ...(filterPattern && {
+              filterPattern: filterPattern.replace(
+                logEventFilterPatternRegex,
+                ' '
+              ),
+            }),
             logGroupName: logGroupName,
             logStreamNames: [logStreamName],
             ...(nextToken && { nextToken: nextToken }),
@@ -39,43 +56,57 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
               setLogEvents((prevState) => {
                 return {
                   ...res,
-                  events: [...(prevState?.events ? prevState.events : []), ...(res?.events ? res.events : [])],
-                  nextToken: res?.nextToken && res.events?.length >= limit ? res?.nextToken : undefined,
-                }
-              })
-              setLoadMore(false)
-              setLogEventLoading(false)
+                  events: [
+                    ...(prevState?.events ? prevState.events : []),
+                    ...(res?.events ? res.events : []),
+                  ],
+                  nextToken:
+                    res?.nextToken && res.events?.length >= limit
+                      ? res?.nextToken
+                      : undefined,
+                };
+              });
+              setLoadMore(false);
+              setLogEventLoading(false);
             } else {
               res &&
                 setLogEvents({
                   ...res,
-                  nextToken: res?.nextToken && res.events?.length >= limit ? res?.nextToken : undefined,
-                })
-              setLogEventLoading(false)
+                  nextToken:
+                    res?.nextToken && res.events?.length >= limit
+                      ? res?.nextToken
+                      : undefined,
+                });
+              setLogEventLoading(false);
             }
           })
           .catch(() => {
-            setLogEventLoading(false)
-          })
+            setLogEventLoading(false);
+          });
       } catch {
-        setLogEventLoading(false)
-        setLoadMore(false)
+        setLogEventLoading(false);
+        setLoadMore(false);
       }
     },
-    [],
-  )
+    []
+  );
 
   const handleOnchange = React.useCallback(
     (event: { target: { value: string } }) => {
-      const searchInput = event?.target?.value
-      _.debounce(fetchLogsEvent, 600)(logStreamName, logGroupName, '', searchInput ?? '')
+      const searchInput = event?.target?.value;
+      _.debounce(fetchLogsEvent, 600)(
+        logStreamName,
+        logGroupName,
+        '',
+        searchInput ?? ''
+      );
     },
-    [fetchLogsEvent, logGroupName, logStreamName],
-  )
+    [fetchLogsEvent, logGroupName, logStreamName]
+  );
 
   React.useEffect(() => {
-    fetchLogsEvent(logStreamName, logGroupName)
-  }, [fetchLogsEvent, logGroupName, logStreamName])
+    fetchLogsEvent(logStreamName, logGroupName);
+  }, [fetchLogsEvent, logGroupName, logStreamName]);
   return (
     <div
       className="m-1 rounded overflow-y-auto overflow-x-hidden max-h-96 pr-1 relative"
@@ -120,11 +151,14 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
                     <Accordion
                       openIcon={<BiSolidDownArrow className={'w-3 h-3'} />}
                       closeIcon={<BiSolidRightArrow className={'w-3 h-3'} />}
-                      className={`border-2 rounded ${index % 2 === 0 ? 'bg-white/60' : 'bg-black/5'}`}
+                      className={`border-2 rounded ${
+                        index % 2 === 0 ? 'bg-white/60' : 'bg-black/5'
+                      }`}
                       key={event?.timestamp + '_' + index}
                       leftAdornment={
                         <div className="whitespace-nowrap text-sm">
-                          {event?.timestamp && new Date(event?.timestamp).toLocaleString()}
+                          {event?.timestamp &&
+                            new Date(event?.timestamp).toLocaleString()}
                         </div>
                       }
                       rightAdornment={
@@ -134,25 +168,35 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
                       }
                     >
                       <div className="w-full overflow-auto p-4 font-light text-sm font-mono relative">
-                        <pre className="whitespace-pre-wrap">{event?.message}</pre>
+                        <pre className="whitespace-pre-wrap">
+                          {event?.message}
+                        </pre>
                         <button
                           className="absolute right-0 bottom-0 bg-transparent hover:bg-slate-500 text-slate-400 font-semibold hover:text-white py-1 m-1 px-3 border border-slate-400 hover:border-transparent rounded flex items-center justify-between"
                           onClick={() => {
-                            navigator.clipboard.writeText(event?.message as string)
+                            navigator.clipboard.writeText(
+                              event?.message as string
+                            );
                           }}
                         >
                           Copy
                         </button>
                       </div>
                     </Accordion>
-                  )
+                  );
                 })}
 
                 {!loadMore && !logEventLoading && logEvents?.nextToken && (
                   <div
                     role="button"
                     tabIndex={-1}
-                    onClick={() => fetchLogsEvent(logStreamName, logGroupName, logEvents?.nextToken)}
+                    onClick={() =>
+                      fetchLogsEvent(
+                        logStreamName,
+                        logGroupName,
+                        logEvents?.nextToken
+                      )
+                    }
                     className="text-blue-500 text-sm hover:text-blue-600 text-center font-mono hover:bg-black/5 rounded"
                   >
                     Load More...
@@ -173,7 +217,7 @@ const LogEventsDetail = ({ logGroupName, logStreamName }: { logGroupName: string
         )}
       </>
     </div>
-  )
-}
+  );
+};
 
-export default LogEventsDetail
+export default LogEventsDetail;

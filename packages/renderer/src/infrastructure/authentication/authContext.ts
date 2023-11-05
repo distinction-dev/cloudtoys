@@ -1,24 +1,25 @@
-import React from 'react'
+import React from 'react';
 
 export type AuthProviderValue = {
-  user?: boolean
-  setUser?: React.Dispatch<React.SetStateAction<boolean>>
-  login?: () => void
-  logout?: () => void
-}
+  user?: boolean;
+  setUser?: React.Dispatch<React.SetStateAction<boolean>>;
+  login?: () => void;
+  logout?: () => void;
+};
 const AuthContext = React.createContext<AuthProviderValue>({
   user: false,
   setUser: () => {
-    return null
+    return null;
   },
   login: () => {
-    return null
+    return null;
   },
   logout: () => {
-    return null
+    return null;
   },
-})
+});
 
-export const useAuth = (): AuthProviderValue => React.useContext<AuthProviderValue>(AuthContext)
+export const useAuth = (): AuthProviderValue =>
+  React.useContext<AuthProviderValue>(AuthContext);
 
-export default AuthContext
+export default AuthContext;

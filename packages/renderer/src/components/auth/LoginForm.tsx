@@ -1,20 +1,25 @@
-import React from 'react'
-import AuthPage from './AuthPage'
-import { useAuth } from '../../infrastructure/authentication/authContext'
+import React from 'react';
+import AuthPage from './AuthPage';
+import { useAuth } from '../../infrastructure/authentication/authContext';
 
 const LoginForm: React.FC = () => {
-  const { login } = useAuth()
+  const { login } = useAuth();
   return (
     <AuthPage>
       <div className="xl:col-span-3 lg:col-span-2 lg:mx-10 my-auto text-sky-700">
         <div>
           <h1 className="text-2xl/tight mb-3">Sign In</h1>
-          <p className="text-lg font-medium leading-relaxed">We are here to help you to connect with you.</p>
+          <p className="text-lg font-medium leading-relaxed">
+            We are here to help you to connect with you.
+          </p>
         </div>
 
         <div className="space-y-5 mt-10">
           <div>
-            <label className="font-medium text-sm block mb-2 text-sky-700" htmlFor="email">
+            <label
+              className="font-medium text-sm block mb-2 text-sky-700"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -31,7 +36,10 @@ const LoginForm: React.FC = () => {
               <label className="font-medium text-sm text-sky-700" htmlFor="pwd">
                 Password
               </label>
-              <a href="forgot-password-1.html" className="font-medium text-sky-700 text-sm ">
+              <a
+                href="forgot-password-1.html"
+                className="font-medium text-sky-700 text-sm "
+              >
                 Forget your password?
               </a>
             </div>
@@ -46,7 +54,10 @@ const LoginForm: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-6 mt-8">
-          <button className="bg-sky-600 text-white text-sm rounded-lg px-6 py-2.5" onClick={login}>
+          <button
+            className="bg-sky-600 text-white text-sm rounded-lg px-6 py-2.5"
+            onClick={login}
+          >
             Sign In
           </button>
           <p className="text-sm text-sky-700">
@@ -58,7 +69,7 @@ const LoginForm: React.FC = () => {
         </div>
       </div>
     </AuthPage>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;
