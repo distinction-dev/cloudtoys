@@ -13,6 +13,14 @@ dist-ssr
 dist-electron
 release
 *.local
+node_modules
+.DS_Store
+dist
+*.local
+thumbs.db
+types/env.d.ts
+
+.eslintcache
 
 # Editor directories and files
 # .vscode/*

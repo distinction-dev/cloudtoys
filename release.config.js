@@ -1,10 +1,10 @@
-export default {
+module.exports = {
   branches: [
     'master',
-    // 'next',
-    // 'next-major',
-    // { name: 'beta', prerelease: true },
-    // { name: 'alpha', prerelease: true },
+    'next',
+    'next-major',
+    { name: 'beta', prerelease: true },
+    { name: 'alpha', prerelease: true },
   ],
   plugins: [
     '@semantic-release/commit-analyzer',
