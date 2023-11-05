@@ -1,5 +1,10 @@
-name: Release
-on: workflow_dispatch
+name: Release A New Version
+on: [workflow_call, workflow_dispatch]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -18,8 +23,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.17
-      - run: npm clean-install
+          node-version: 16
+      - run: npm ci
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       - run: npx semantic-release --dry-run
@@ -30,7 +35,7 @@ jobs:
       new-release-published: ${{ steps.get-next-version.outputs.new-release-published }}
       new-release-version: ${{ steps.get-next-version.outputs.new-release-version }}
 
-  artifacts:
+  draft:
     needs: [get-next-version]
     runs-on: ubuntu-latest
     if: needs.get-next-version.outputs.new-release-published == 'true'
@@ -64,14 +69,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      
-      - name: Create Release Files
+      - name: Create Release Draft
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          prerelease: false
-          draft: false
+          prerelease: true
+          draft: true
           tag_name: v${{ needs.get-next-version.outputs.new-release-version }}
           name: v${{ needs.get-next-version.outputs.new-release-version }}
           body: ${{ steps.release-note.outputs.release-note }}
@@ -80,12 +84,11 @@ jobs:
       version: ${{ needs.get-next-version.outputs.new-release-version }}
 
   upload_artifacts:
-    needs: [artifacts]
+    needs: [draft]
 
     strategy:
-      fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -93,39 +96,38 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.17
+          node-version: 16
           cache: 'npm'
 
-      - run: npm clean-install
+      - run: npm ci
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
       - name: Prepare release notes
         env:
-          RELEASE_NOTE: ${{ needs.artifacts.outputs.release-note }}
+          RELEASE_NOTE: ${{ needs.draft.outputs.release-note }}
         run: echo "$RELEASE_NOTE" >> ./buildResources/release-notes.md
 
       - name: Show version
-        run: echo "Next Version is ${{ needs.artifacts.outputs.version }} (${{ github.ref_name }})"
+        run: echo "Next Version is ${{ needs.draft.outputs.version }} (${{ github.ref_name }})"
 
       - name: Update and push version tag
         run: npm run updateVersion
 
       - name: Write next version to meta.json
-        run: echo "{\"version\":\"${{ needs.artifacts.outputs.version }}\"}" >| ./buildResources/meta.json
+        run: echo "{\"version\":\"${{ needs.draft.outputs.version }}\"}" >| ./buildResources/meta.json
 
       - name: Build the app
         env:
           MODE: 'production'
-          VITE_APP_VERSION: ${{ needs.artifacts.outputs.version }}
         run: npm run build
 
-      # - name: Compile & release Electron app
-      #   id: release-to-github
-      #   env:
-      #     VITE_APP_VERSION: ${{ needs.artifacts.outputs.version }}
-      #   run: npm run release
+      - name: Compile & release Electron app
+        id: release-to-github
+        env:
+          VITE_APP_VERSION: ${{ needs.draft.outputs.version }}
+        run: npm run release
 
       - name: Delete tag for failed release
         if: steps.release-to-github.outcome == 'failure'
-        run: git push --delete origin v${{ needs.artifacts.outputs.version }}```
+        run: git push --delete origin v${{ needs.draft.outputs.version }}
