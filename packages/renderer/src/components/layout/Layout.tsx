@@ -6,6 +6,7 @@ import LogGroupSkeleton from '../../infrastructure/common/skeletons/LogGroupSkel
 import Tooltip from '../../infrastructure/common/tooltip/Tooltip';
 import type { LogGroup } from '../../utils/interfaces/LogGroup';
 import _ from 'lodash';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 type LogGroupContextType = {
   refreshFun: (region?: string, profile?: string) => void; // Example type for refreshFun
@@ -264,55 +265,59 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             />
           </button>
         </header>
-        <div className="flex flex-row w-full  h-[calc(100vh-2.5rem)]">
-          <nav className="w-64 bg-white expanded flex flex-col justify-start items-start">
-            <div className="w-64 bg-white flex flex-col justify-start items-start overflow-hidden flex-grow">
-              <div className="flex p-1 pl-2 justify-start items-center text-lg font-bold font-mono">
-                <span className="text-black/80">Log Groups</span>
-                {loadMore || logGroupLoading ? (
-                  <>
-                    &nbsp;{' '}
-                    <span className="text-secondary-500 ">
-                      <ImSpinner2 className={'animate-spin w-5 h-5'} />
+        <PanelGroup direction="horizontal">
+          <div className="flex flex-row w-full  h-[calc(100vh-2.5rem)]">
+            <Panel
+              minSize={20}
+              className=" bg-white  flex flex-col justify-start items-start "
+            >
+              <div className="w-full bg-white flex flex-col justify-start items-start overflow-hidden flex-grow">
+                <div className="flex p-1 pl-2 justify-start items-center text-lg font-bold font-mono">
+                  <span className="text-black/80">Log Groups</span>
+                  {loadMore || logGroupLoading ? (
+                    <>
+                      &nbsp;{' '}
+                      <span className="text-secondary-500 ">
+                        <ImSpinner2 className={'animate-spin w-5 h-5'} />
+                      </span>
+                      &nbsp;
+                    </>
+                  ) : (
+                    <span className="text-secondary-400">
+                      &nbsp;({logs?.logGroups?.length || 0})&nbsp;
                     </span>
-                    &nbsp;
-                  </>
-                ) : (
-                  <span className="text-secondary-400">
-                    &nbsp;({logs?.logGroups?.length || 0})&nbsp;
-                  </span>
-                )}
-              </div>
-              <div className="flex p-1 justify-start items-center text-lg w-full font-mono">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  id="logGroupSearch"
-                  onChange={handleOnchange}
-                  className="transition-transform transform hover:scale-y-110 ease-out duration-500 w-full p-1 px-2 bg-secondary-100 rounded-full text-black/90 font-mono focus:outline-none"
-                />
-              </div>
-              <div className="overflow-y-auto overflow-x-hidden flex-grow w-full p-1 shadow-inner font-mono ">
-                {/* <div className="font-mono"> */}
-                {!logGroupLoading && logs?.logGroups?.length ? (
-                  <>
-                    {logs?.logGroups?.map((item: LogGroup, index: number) => {
-                      return (
-                        <Tooltip
-                          key={`loggroup_${item?.creationTime}_${index}`}
-                          hideOnHover={
-                            logs.logGroups &&
-                            logs.logGroups.length - 1 === index
-                              ? false
-                              : true
-                          }
-                          message={item?.logGroupName as string}
-                        >
-                          <div
-                            role="button"
-                            tabIndex={-1}
-                            onClick={() => handleClick(item)}
-                            className={`p-1 m-1 w-full hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
+                  )}
+                </div>
+                <div className="flex p-1 justify-start items-center text-lg w-full font-mono">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    id="logGroupSearch"
+                    onChange={handleOnchange}
+                    className="transition-transform transform hover:scale-y-110 ease-out duration-500 w-full p-1 px-2 bg-secondary-100 rounded-full text-black/90 font-mono focus:outline-none"
+                  />
+                </div>
+                <div className="overflow-y-auto overflow-x-hidden flex-grow w-full p-1 shadow-inner font-mono">
+                  {/* <div className="font-mono"> */}
+                  {!logGroupLoading && logs?.logGroups?.length ? (
+                    <>
+                      {logs?.logGroups?.map((item: LogGroup, index: number) => {
+                        return (
+                          <Tooltip
+                            key={`loggroup_${item?.creationTime}_${index}`}
+                            hideOnHover={
+                              logs.logGroups &&
+                              logs.logGroups.length - 1 === index
+                                ? false
+                                : true
+                            }
+                            message={item?.logGroupName as string}
+                          >
+                            <div
+                              role="button"
+                              tabIndex={-1}
+                              onClick={() => handleClick(item)}
+                              className={`p-1 m-1 w-full hover:bg-black/5 hover:text-primary-400 active:text-primary-500 rounded-md whitespace-nowrap overflow-hidden text-ellipsis
                            ${
                              item?.arn === logGroup?.arn
                                ? 'bg-black/5 text-primary-700'
@@ -320,82 +325,83 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                            } 
                              hover:scale-105 ease-out
                            `}
-                            style={{
-                              transition:
-                                'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
-                              transform: show
-                                ? 'translateX(0)'
-                                : `translateX(-${25 * (index + 1)}%)`,
-                              opacity: show ? 1 : 0,
-                              animation: show
-                                ? 'enterFromLeft 0.3s ease-in-out'
-                                : '',
-                              animationDelay: `0.${index + 3}s`,
-                            }}
-                            key={`loggroup_${item?.creationTime}_${index}`}
-                          >
-                            <span
-                              className={`
+                              style={{
+                                transition:
+                                  'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
+                                transform: show
+                                  ? 'translateX(0)'
+                                  : `translateX(-${25 * (index + 1)}%)`,
+                                opacity: show ? 1 : 0,
+                                animation: show
+                                  ? 'enterFromLeft 0.3s ease-in-out'
+                                  : '',
+                                animationDelay: `0.${index + 3}s`,
+                              }}
+                              key={`loggroup_${item?.creationTime}_${index}`}
+                            >
+                              <span
+                                className={`
                              hover:scale-105 ease-in
                            `}
-                            >
-                              {item?.logGroupName}
-                            </span>
-                          </div>
-                        </Tooltip>
-                      );
-                    })}
-                    {!loadMore && !logGroupLoading && logs?.nextToken && (
-                      <div
-                        role="button"
-                        tabIndex={-1}
-                        onClick={() =>
-                          fetchLogs(
-                            logs?.logGroupNamePattern ?? '',
-                            logs?.nextToken
-                          )
-                        }
-                        className="text-blue-500 text-sm hover:text-blue-600 text-center font-mono hover:bg-black/5 rounded"
-                      >
-                        Load More...
-                      </div>
-                    )}
-                    {loadMore && (
-                      <div className="text-sm hover:text-blue-600 flex justify-center items-center font-mono hover:bg-black/5 rounded text-secondary-500">
-                        <ImSpinner2 className={'animate-spin w-5 h-5'} />
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="w-full text-center">No Data Available!</div>
-                )}
-                {(loadMore || logGroupLoading) &&
-                  Array(12)
-                    .fill('logGroup')
-                    .map((item, index: number) => {
-                      return (
+                              >
+                                {item?.logGroupName}
+                              </span>
+                            </div>
+                          </Tooltip>
+                        );
+                      })}
+                      {!loadMore && !logGroupLoading && logs?.nextToken && (
                         <div
-                          key={item + index}
-                          className=" animate-pulse bg-gray-200 h-8 rounded-md m-1 "
-                        ></div>
-                      );
-                    })}
-                {/* </div> */}
+                          role="button"
+                          tabIndex={-1}
+                          onClick={() =>
+                            fetchLogs(
+                              logs?.logGroupNamePattern ?? '',
+                              logs?.nextToken
+                            )
+                          }
+                          className="text-blue-500 text-sm hover:text-blue-600 text-center font-mono hover:bg-black/5 rounded"
+                        >
+                          Load More...
+                        </div>
+                      )}
+                      {loadMore && (
+                        <div className="text-sm hover:text-blue-600 flex justify-center items-center font-mono hover:bg-black/5 rounded text-secondary-500">
+                          <ImSpinner2 className={'animate-spin w-5 h-5'} />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="w-full text-center">No Data Available!</div>
+                  )}
+                  {(loadMore || logGroupLoading) &&
+                    Array(12)
+                      .fill('logGroup')
+                      .map((item, index: number) => {
+                        return (
+                          <div
+                            key={item + index}
+                            className=" animate-pulse bg-gray-200 h-8 rounded-md m-1 "
+                          ></div>
+                        );
+                      })}
+                  {/* </div> */}
+                </div>
               </div>
-            </div>
-            <div
-              style={{ zIndex: 1 }}
-              className="bg-secondary-200 p-1 font-mono flex justify-between items-center text-sm text-black/60 font-semibold w-full"
-            >
-              <span>CloudToys</span>&nbsp;
-              <span>version 0.0.1</span>
-            </div>
-          </nav>
-
-          <main className="w-full overflow-y-auto text-gray-700 bg-secondary-100 font-mono p-5">
-            {logGroupLoading ? <LogGroupSkeleton /> : children}
-          </main>
-        </div>
+              <div
+                style={{ zIndex: 1 }}
+                className="bg-secondary-200 p-1 font-mono flex justify-between items-center text-sm text-black/60 font-semibold w-full"
+              >
+                <span>CloudToys</span>&nbsp;
+                <span>version 0.0.1</span>
+              </div>
+            </Panel>
+            <PanelResizeHandle />
+            <Panel className="w-full overflow-y-auto text-gray-700 bg-secondary-100 font-mono p-5">
+              {logGroupLoading ? <LogGroupSkeleton /> : children}
+            </Panel>
+          </div>
+        </PanelGroup>
       </div>
     </LogGroupContext.Provider>
   );
