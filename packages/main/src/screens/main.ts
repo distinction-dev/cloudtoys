@@ -1,6 +1,9 @@
-import { BrowserWindow, screen } from 'electron';
+import { BrowserWindow, screen, ipcMain } from 'electron';
 import { join } from 'path';
 import { homePageUrl } from '../utils/common';
+import Store from 'electron-store';
+
+const store = new Store();
 
 async function createWindow() {
   const browserWindow = new BrowserWindow({
@@ -10,6 +13,7 @@ async function createWindow() {
     minHeight: Math.round(0.72 * screen.getPrimaryDisplay().workArea.height),
     show: false, // Use 'ready-to-show' event to show window
     webPreferences: {
+      devTools: false,
       webviewTag: false, // The webview tag is not recommended. Consider alternatives like iframe or Electron's BrowserView. https://www.electronjs.org/docs/latest/api/webview-tag#warning
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       sandbox: false,
@@ -40,6 +44,13 @@ async function createWindow() {
 
   return browserWindow;
 }
+
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = store.get(val);
+});
+ipcMain.on('electron-store-set', async (event, key, val) => {
+  store.set(key, val);
+});
 
 /**
  * Restore existing BrowserWindow or Create new BrowserWindow

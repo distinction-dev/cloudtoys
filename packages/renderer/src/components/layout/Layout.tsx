@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoRefreshCircle } from 'react-icons/io5';
 import { ImSpinner2 } from 'react-icons/im';
@@ -52,6 +52,7 @@ const REGIONS_ENUMS = [
 ];
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const panelRef = React.useRef(null);
   const [logs, setLogs] = React.useState<LogsState>({});
   const [logGroup, setLogGroup] = React.useState<LogGroup>({});
   const [clients, setClients] = React.useState([]);
@@ -199,6 +200,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       region,
     };
   }, [initClients, logGroup, profile, region]);
+
   return (
     <LogGroupContext.Provider
       value={logGroupContextValue as LogGroupContextType}
@@ -266,10 +268,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </button>
         </header>
         <PanelGroup direction="horizontal">
-          <div className="flex flex-row w-full  h-[calc(100vh-2.5rem)]">
+          <div className="flex flex-row w-full h-[calc(100vh-2.5rem)]">
             <Panel
-              minSize={20}
-              className=" bg-white  flex flex-col justify-start items-start "
+              ref={panelRef}
+              defaultSize={window.electron.store.get('panelsize') || 20}
+              onResize={() => {
+                if (panelRef.current) {
+                  const size = Math.floor(panelRef.current.getSize());
+                  window.electron.store.set('panelsize', size);
+                }
+              }}
+              className=" bg-white flex flex-col justify-start items-start "
             >
               <div className="w-full bg-white flex flex-col justify-start items-start overflow-hidden flex-grow">
                 <div className="flex p-1 pl-2 justify-start items-center text-lg font-bold font-mono">
@@ -397,7 +406,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
             </Panel>
             <PanelResizeHandle />
-            <Panel className="w-full overflow-y-auto text-gray-700 bg-secondary-100 font-mono p-5">
+            <Panel className=" overflow-y-auto text-gray-700 bg-secondary-100 font-mono p-5">
               {logGroupLoading ? <LogGroupSkeleton /> : children}
             </Panel>
           </div>
