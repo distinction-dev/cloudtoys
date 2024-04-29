@@ -12,7 +12,7 @@ import {
 import './security-restrictions';
 import {
   restoreOrCreateMainWindow,
-//   restoreOrCreateBreakWindow,
+  //   restoreOrCreateBreakWindow,
 } from './screens';
 import { initEventSubscriptions } from './utils/events';
 import {
