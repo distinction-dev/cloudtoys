@@ -3,10 +3,10 @@ import colors from 'tailwindcss/colors';
 
 module.exports = {
   content: [
-    "./packages/renderer/index.html",
-    "./packages/renderer/src/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./index.html",
+    './packages/renderer/index.html',
+    './packages/renderer/src/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx}',
+    './index.html',
   ], 
   theme: {
     extend: {
@@ -40,5 +40,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
-
+};

@@ -251,7 +251,7 @@ const LogGroupDetail = () => {
                   fetchLogStreams(query.get('logGroupName') as string);
                 }}
               >
-                <TfiReload className={`w-4 h-4 `} />
+                <TfiReload className={'w-4 h-4'} />
               </button>
             </div>
           }
@@ -280,7 +280,7 @@ const LogGroupDetail = () => {
                             {logStream?.logStreamName}
                           </h6>
                         }
-                        className={`m-1 p-1 rounded`}
+                        className={'m-1 p-1 rounded'}
                         headerClasses="bg-black/10 rounded-b-none text-base "
                         bodyClasses="bg-black/5 rounded-t-none"
                       >
@@ -310,7 +310,7 @@ const LogGroupDetail = () => {
             deleteLogGroup(logGroup?.logGroupName as string);
           }}
           isLoading={deleteLoading}
-          title={`Are you sure you want to delete the log-stream ?`}
+          title={'Are you sure you want to delete the log-stream ?'}
           subTitle={`Log-Group : ${logGroup.logGroupName}`}
         />
       )}

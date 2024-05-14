@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoRefreshCircle } from 'react-icons/io5';
 import { ImSpinner2 } from 'react-icons/im';
@@ -271,7 +271,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="flex flex-row w-full h-[calc(100vh-2.5rem)]">
             <Panel
               ref={panelRef}
-              defaultSize={window.electron.store.get('panelsize') || 20}
+              defaultSize={window?.electron?.store?.get('panelsize') || 20}
               onResize={() => {
                 if (panelRef.current) {
                   const size = Math.floor(panelRef.current.getSize());
