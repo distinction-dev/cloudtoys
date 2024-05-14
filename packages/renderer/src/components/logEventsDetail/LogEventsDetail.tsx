@@ -126,7 +126,7 @@ const LogEventsDetail = ({
                 hover:text-white font-bold active:text-white/80 transition-transform transform hover:scale-105 ease-out duration-500"
               onClick={() => fetchLogsEvent(logStreamName, logGroupName)}
             >
-              <TfiReload className={`w-4 h-4 `} />
+              <TfiReload className={'w-4 h-4'} />
             </button>
           </div>
           <div className="flex justify-between w-full bg-gray-300 z-10 shadow-md">
