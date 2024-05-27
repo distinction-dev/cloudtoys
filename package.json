@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.409.0",
+    "@aws-sdk/client-s3": "^3.583.0",
     "@aws-sdk/credential-providers": "^3.409.0",
     "@smithy/shared-ini-file-loader": "^2.2.0",
     "assert": "^2.1.0",

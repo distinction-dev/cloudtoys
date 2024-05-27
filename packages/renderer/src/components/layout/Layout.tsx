@@ -62,6 +62,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = React.useState(false);
   const [loadMore, setLoadMore] = React.useState(false);
   const [logGroupLoading, setLogGroupLoading] = React.useState(false);
+  const [buckets, setBuckets] = React.useState('');
 
   const navigate = useNavigate();
   const handleClick = React.useCallback(
@@ -82,10 +83,20 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       .invoke('getConfigs')
       .then((res: { credentialsFile: object }) => {
         if (res?.credentialsFile && Object.keys(res?.credentialsFile)?.length) {
+          console.log("buckets ====>", res?.credentialsFile);
+
           setClients(Object.keys(res?.credentialsFile) as never[]);
         }
       });
   };
+
+  const getBucketList = () => {
+    (window as any).electronApi.invoke('ListBucketsCommand').then((res: any) => {
+      setBuckets(JSON.stringify(res))
+      console.log("buckets ====>", res);
+    }
+    )
+  }
 
   const fetchLogs = React.useCallback(
     (logGroupNamePattern?: string, nextToken?: string) => {
@@ -158,11 +169,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     (region?: string, profile?: string) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).electronApi
-        .invoke('initClient', {
+        .invoke('initClients', {
           region: region,
           ...(profile && { profile: profile }),
         })
         .then(() => {
+          getBucketList()
           fetchLogs();
         });
     },
