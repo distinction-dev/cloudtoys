@@ -8,6 +8,10 @@ import type { LogGroup } from '../../utils/interfaces/LogGroup';
 import _ from 'lodash';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
+
+
+
+
 type LogGroupContextType = {
   refreshFun: (region?: string, profile?: string) => void; // Example type for refreshFun
   logGroup: LogGroup;
@@ -90,13 +94,29 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
-  const getBucketList = () => {
-    (window as any).electronApi.invoke('ListBucketsCommand').then((res: any) => {
-      setBuckets(JSON.stringify(res))
-      console.log("buckets ====>", res);
-    }
-    )
+  window.electronApi.invoke('list-s3-buckets')
+  .then(() => {
+    console.log('S3 buckets and contents have been logged to the console.');
+  })
+  .catch((error) => {
+    console.error('Error listing S3 buckets and contents:', error);
+  });
+
+
+async function getListS3Buckets() {
+  try {
+    const buckets = await window.electronApi.invoke('list-s3-buckets')
+    console.log(buckets); // Process the list of buckets
+    setBuckets(buckets)
+  } catch (error) {
+    console.error('Error listing S3 buckets:', error);
   }
+}
+
+// Call the function at the appropriate time (e.g., on button click or component mount)
+// getListS3Buckets();
+
+
 
   const fetchLogs = React.useCallback(
     (logGroupNamePattern?: string, nextToken?: string) => {
@@ -174,7 +194,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           ...(profile && { profile: profile }),
         })
         .then(() => {
-          getBucketList()
+          // getBucketList()
           fetchLogs();
         });
     },
@@ -201,6 +221,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
   React.useEffect(() => {
     defaultInit(region);
+    getListS3Buckets();
   }, []);
 
   const logGroupContextValue = React.useMemo(() => {
@@ -280,7 +301,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </button>
         </header>
         <PanelGroup direction="horizontal">
-          <div className="flex flex-row w-full h-[calc(100vh-2.5rem)]">
+          <div className="flex flex-row w-full">
             <Panel
               ref={panelRef}
               defaultSize={window?.electron?.store?.get('panelsize') || 20}
@@ -418,7 +439,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
             </Panel>
             <PanelResizeHandle />
-            <Panel className=" overflow-y-auto text-gray-700 bg-secondary-100 font-mono p-5">
+            <Panel className=" overflow-auto text-gray-700 bg-secondary-100 font-mono p-5">
+              <div>
+                {buckets.map((bucket) => {
+                  return(
+                    <p>{bucket}</p>
+                  )
+                })}
+              </div>
               {logGroupLoading ? <LogGroupSkeleton /> : children}
             </Panel>
           </div>

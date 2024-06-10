@@ -13,11 +13,12 @@ contextBridge.exposeInMainWorld('electronApi', {
   invoke: (method: string, params: object) => {
     return ipcRenderer.invoke(method, params);
   },
+  invokeListS3Buckets: () => ipcRenderer.invoke('list-s3-buckets'),
 
-  // DescribeLogGroupsCommand(params: any) {
-  //   return ipcRenderer.invoke('DescribeLogGroupsCommand', params)
-  // },
 });
+
+
+
 
 contextBridge.exposeInMainWorld('electron', {
   store: {
