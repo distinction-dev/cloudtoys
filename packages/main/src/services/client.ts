@@ -18,14 +18,14 @@ export function initAWSClients({
       }),
       region,
     });
-    
+
     clients['s3'] = new S3Client({
       credentials: fromIni({
         profile,
       }),
       region,
     });
-    
+
     return clients;
   } catch (e) {
     console.error('Could not initialize clients', e);
@@ -34,8 +34,6 @@ export function initAWSClients({
 }
 
 export const getAWSClient = (service: string) => clients[service];
-
-
 
 // const { fromIni } = require('@aws-sdk/credential-providers');
 

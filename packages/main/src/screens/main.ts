@@ -1,24 +1,58 @@
 import { BrowserWindow, screen, ipcMain } from 'electron';
 import { join } from 'path';
 import { homePageUrl } from '../utils/common';
-import {S3Client, ListBucketsCommand, ListObjectsV2Command} from '@aws-sdk/client-s3'
+import {
+  S3Client,
+  ListBucketsCommand,
+  ListObjectsV2Command,
+  GetBucketLocationCommand,
+} from '@aws-sdk/client-s3';
 import Store from 'electron-store';
-
 
 const store = new Store();
 const s3Client = new S3Client({
   region: 'ap-south-1',
 });
 
-async function listS3BucketsAndContents() {
+async function listS3Buckets() {
   try {
     const command = new ListBucketsCommand({});
     const response = await s3Client.send(command);
-    return response.Buckets.map(bucket => bucket.Name); // Return the list of bucket names
+    const buckets = response.Buckets || [];
+
+    const bucketRegionsPromises = buckets.map(async (bucket) => {
+      const locationCommand = new GetBucketLocationCommand({
+        Bucket: bucket.Name,
+      });
+      const locationResponse = await s3Client.send(locationCommand);
+      // The location constraint will be null for the us-east-1 region
+      const bucketRegion = locationResponse.LocationConstraint
+        ? locationResponse.LocationConstraint
+        : 'us-east-1';
+      return { Name: bucket.Name, Region: bucketRegion };
+    });
+
+    const bucketRegions = await Promise.all(bucketRegionsPromises);
+    const filteredBuckets = bucketRegions
+      .filter((bucket) => bucket.Region === 'ap-south-1')
+      .map((bucket) => bucket.Name);
+
+    return filteredBuckets; // Return the list of bucket names in 'ap-south-1'
   } catch (error) {
     console.error('Error listing S3 buckets:', error);
     return []; // Return an empty array in case of an error
   }
+}
+
+async function listS3ObjectFromBuckets(bucketName: string, prefix?: string) {
+  const input = {
+    Bucket: bucketName,
+    Delimiter: '/',
+    Prefix: prefix,
+  };
+  const command = new ListObjectsV2Command(input);
+  const response = await s3Client.send(command);
+  return response;
 }
 
 let mainWindow: BrowserWindow | null;
@@ -70,12 +104,19 @@ ipcMain.on('electron-store-set', async (event, key, val) => {
 });
 
 ipcMain.handle('list-s3-buckets', async (_) => {
-  const buckets = await listS3BucketsAndContents();
+  const buckets = await listS3Buckets();
   mainWindow?.webContents.send('s3-buckets', buckets);
   return buckets;
 });
 
-
+ipcMain.handle(
+  'list-s3-objects',
+  async (_, bucketName: string, prefix?: string) => {
+    const objects = await listS3ObjectFromBuckets(bucketName, prefix);
+    mainWindow?.webContents.send('s3-objects', objects);
+    return objects;
+  }
+);
 
 /**
  * Restore existing BrowserWindow or Create new BrowserWindow

@@ -1,16 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IoRefreshCircle } from 'react-icons/io5';
 import { ImSpinner2 } from 'react-icons/im';
 import LogGroupSkeleton from '../../infrastructure/common/skeletons/LogGroupSkeleton';
 import Tooltip from '../../infrastructure/common/tooltip/Tooltip';
-import type { LogGroup } from '../../utils/interfaces/LogGroup';
+import type { LogGroup } from '/@/utils/interfaces/LogGroup';
 import _ from 'lodash';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-
-
-
-
+import { useQuery } from '@tanstack/react-query';
 
 type LogGroupContextType = {
   refreshFun: (region?: string, profile?: string) => void; // Example type for refreshFun
@@ -67,6 +64,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [loadMore, setLoadMore] = React.useState(false);
   const [logGroupLoading, setLogGroupLoading] = React.useState(false);
   const [buckets, setBuckets] = React.useState('');
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['buckets'],
+    queryFn: getListS3Buckets,
+  });
 
   const navigate = useNavigate();
   const handleClick = React.useCallback(
@@ -87,36 +88,21 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       .invoke('getConfigs')
       .then((res: { credentialsFile: object }) => {
         if (res?.credentialsFile && Object.keys(res?.credentialsFile)?.length) {
-          console.log("buckets ====>", res?.credentialsFile);
+          console.log('buckets ====>', res?.credentialsFile);
 
           setClients(Object.keys(res?.credentialsFile) as never[]);
         }
       });
   };
 
-  window.electronApi.invoke('list-s3-buckets')
-  .then(() => {
-    console.log('S3 buckets and contents have been logged to the console.');
-  })
-  .catch((error) => {
-    console.error('Error listing S3 buckets and contents:', error);
-  });
-
-
-async function getListS3Buckets() {
-  try {
-    const buckets = await window.electronApi.invoke('list-s3-buckets')
-    console.log(buckets); // Process the list of buckets
-    setBuckets(buckets)
-  } catch (error) {
-    console.error('Error listing S3 buckets:', error);
+  async function getListS3Buckets() {
+    try {
+      const buckets = await window.electronApi.invoke('list-s3-buckets');
+      return buckets;
+    } catch (error) {
+      console.error('Error listing S3 buckets:', error);
+    }
   }
-}
-
-// Call the function at the appropriate time (e.g., on button click or component mount)
-// getListS3Buckets();
-
-
 
   const fetchLogs = React.useCallback(
     (logGroupNamePattern?: string, nextToken?: string) => {
@@ -173,7 +159,6 @@ async function getListS3Buckets() {
             setLogGroupLoading(false);
           })
           .catch(() => {
-            navigate('/home?message=Something went wrong with this profile!');
             setLogs({});
             setLoading(false);
             setLogGroupLoading(false);
@@ -239,7 +224,7 @@ async function getListS3Buckets() {
       value={logGroupContextValue as LogGroupContextType}
     >
       <div className="flex flex-col">
-        <header className="bg-primary-500 shrink-0 h-10 flex justify-end items-center font-mono ">
+        <header className="bg-primary-500 shrink-0 h-10 flex justify-end items-center font-mono sticky top-0">
           <div className="border-white/75 border-l border-solid p-2">
             <select
               name="region"
@@ -301,7 +286,7 @@ async function getListS3Buckets() {
           </button>
         </header>
         <PanelGroup direction="horizontal">
-          <div className="flex flex-row w-full">
+          <div className="flex flex-row w-full border">
             <Panel
               ref={panelRef}
               defaultSize={window?.electron?.store?.get('panelsize') || 20}
@@ -364,7 +349,7 @@ async function getListS3Buckets() {
                              item?.arn === logGroup?.arn
                                ? 'bg-black/5 text-primary-700'
                                : 'text-secondary-700'
-                           } 
+                           }
                              hover:scale-105 ease-out
                            `}
                               style={{
@@ -427,7 +412,6 @@ async function getListS3Buckets() {
                           ></div>
                         );
                       })}
-                  {/* </div> */}
                 </div>
               </div>
               <div
@@ -439,14 +423,53 @@ async function getListS3Buckets() {
               </div>
             </Panel>
             <PanelResizeHandle />
-            <Panel className=" overflow-auto text-gray-700 bg-secondary-100 font-mono p-5">
-              <div>
-                {buckets.map((bucket) => {
-                  return(
-                    <p>{bucket}</p>
-                  )
-                })}
+            <Panel className=" overflow-auto text-gray-700 bg-white font-mono p-5">
+              <h1 className="text-[#0D171C] text-[32px]">S3 buckets</h1>
+              <div className="mt-4">
+                {isLoading ? (
+                  <span>
+                    <ImSpinner2 className={'animate-spin w-5 h-5'} />
+                  </span>
+                ) : (
+                  <div className="border border-[#D1DEE5] rounded-lg">
+                    <table className="block">
+                      <thead className="block">
+                        <tr className=" flex justify-between border-b border-[#D1DEE5]">
+                          <th className="px-4 py-3 text-left text-black  text-sm font-bold leading-normal">
+                            Name
+                          </th>
+                          <th className="px-4 py-3 text-left text-black  text-sm font-bold leading-normal">
+                            Region
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="block">
+                        {data &&
+                          data.length > 0 &&
+                          data.map((bucket, index) => (
+                            <tr
+                              key={index}
+                              className="last:border-b-0 flex justify-between hover:bg-black/5 border-b border-[#D1DEE5] "
+                            >
+                              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-[#0D171C] text-[14px] min-h-[72px] flex items-center">
+                                <Link
+                                  to={`/bucket/${bucket}`}
+                                  className="bucket-link text-inherit font-bold"
+                                >
+                                  <p>{bucket}</p>
+                                </Link>
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-[#4F7A94] text-[14px] min-h-[72px] flex items-center">
+                                <p className="text-inherit">{region}</p>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
+
               {logGroupLoading ? <LogGroupSkeleton /> : children}
             </Panel>
           </div>
