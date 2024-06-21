@@ -51,11 +51,8 @@ const App: React.FC<unknown> = () => {
             </ProtectedRoute>
           }
         /> */}
-          <Route path="/bucket/:bucketName" element={<BucketDetail />} />
-          <Route
-            path="/buckets/:bucketName/objects/*"
-            element={<ObjectDetail />}
-          />
+          <Route path="/Bucket/:bucketName" element={<BucketDetail />} />
+          <Route path="/Buckets/:bucketName/*" element={<ObjectDetail />} />
         </Routes>
         {/* </AuthProvider> */}
       </ThemeProvider>

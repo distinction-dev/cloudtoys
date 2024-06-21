@@ -453,7 +453,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                             >
                               <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-[#0D171C] text-[14px] min-h-[72px] flex items-center">
                                 <Link
-                                  to={`/bucket/${bucket}`}
+                                  to={`/Buckets/${bucket}`}
                                   className="bucket-link text-inherit font-bold"
                                 >
                                   <p>{bucket}</p>

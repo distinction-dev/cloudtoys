@@ -14,11 +14,10 @@ contextBridge.exposeInMainWorld('electronApi', {
     return ipcRenderer.invoke(method, params);
   },
   invokeListS3Buckets: () => ipcRenderer.invoke('list-s3-buckets'),
-
+  invokeListS3Objects: (bucketName: string, prefix?: string) => {
+    return ipcRenderer.invoke('list-s3-objects', bucketName, prefix);
+  },
 });
-
-
-
 
 contextBridge.exposeInMainWorld('electron', {
   store: {

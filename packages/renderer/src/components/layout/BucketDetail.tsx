@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { FaRegFolder, FaFile } from 'react-icons/fa';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { FaRegFolder, FaRegFile } from 'react-icons/fa';
+import { Breadcrumbs } from '@primer/react';
 
 function BucketDetail() {
   const { bucketName } = useParams();
   const navigate = useNavigate();
   const [objects, setObjects] = useState([]);
+  const location = useLocation();
 
   const fetchObjects = useCallback(async (bucketName, prefix) => {
     try {
@@ -41,6 +43,10 @@ function BucketDetail() {
     navigate(-1);
   };
 
+  const pathnames = location.pathname.split('/').filter((x) => x);
+
+  console.log(pathnames);
+
   return (
     <div className="bg-white flex">
       <section className="flex-[0.3]"></section>
@@ -53,6 +59,33 @@ function BucketDetail() {
         >
           Back
         </button>
+        {pathnames.length > 0 && (
+          <Breadcrumbs>
+            {pathnames.map((name, index) => {
+              // Adjust the 'to' value for the first Breadcrumb item
+              const to =
+                index === 0
+                  ? '/'
+                  : `/${pathnames.slice(0, index + 1).join('/')}/`;
+
+              // Check if the current item is the last one in the array
+              const isLast = index === pathnames.length - 1;
+              return (
+                <Breadcrumbs.Item key={index}>
+                  {isLast ? (
+                    // Render as span for the last item
+                    <span className="font-mono text-black">{name}</span>
+                  ) : (
+                    // Render as Link for all other items
+                    <Link className="font-mono" to={to}>
+                      {name}
+                    </Link>
+                  )}
+                </Breadcrumbs.Item>
+              );
+            })}
+          </Breadcrumbs>
+        )}
         <table className="block border border-[#D1DEE5] rounded-lg mt-2">
           <thead className="block">
             <tr className=" flex justify-between border-b border-[#D1DEE5]">
@@ -68,6 +101,7 @@ function BucketDetail() {
             {objects.length > 0 ? (
               objects.map((object, index) => {
                 const parts = object.name.split('/').filter(Boolean);
+
                 const lastPart = parts[parts.length - 1];
 
                 return (
@@ -75,23 +109,32 @@ function BucketDetail() {
                     key={index}
                     className="flex items-center px-2 border-b border-[#D1DEE5] last:border-b-0"
                   >
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-[#0D171C] text-[14px] min-h-[72px] flex items-center">
-                      <span>
-                        <FaRegFolder color="black" size={20} />
-                      </span>
-                    </td>
                     <td>
                       {object.type === 'folder' ? (
-                        <Link
-                          to={`/buckets/${bucketName}/objects/${encodeURIComponent(lastPart)}/`}
-                          className="ml-2 font-mono font-bold text-black"
-                        >
-                          {lastPart}/
-                        </Link>
+                        <tr className="flex items-center">
+                          <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-[#0D171C] text-[14px] min-h-[72px] flex items-center">
+                            <span>
+                              <FaRegFolder color="black" size={20} />
+                            </span>
+                          </td>
+                          <Link
+                            to={`/Buckets/${bucketName}/${encodeURIComponent(lastPart)}/`}
+                            className="ml-2 font-mono font-bold text-black"
+                          >
+                            {lastPart}/
+                          </Link>
+                        </tr>
                       ) : (
-                        <span className="ml-2 font-mono font-bold text-black">
-                          {lastPart}
-                        </span>
+                        <tr className="flex items-center">
+                          <td className="px-2 py-2 whitespace-nowrap text-sm font-medium text-[#0D171C] text-[14px] min-h-[72px] flex items-center">
+                            <span>
+                              <FaRegFile color="black" size={20} />
+                            </span>
+                          </td>
+                          <span className="ml-2  text-black font-bold font-mono">
+                            {lastPart}
+                          </span>
+                        </tr>
                       )}
                     </td>
                   </tr>
