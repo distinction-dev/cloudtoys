@@ -6,7 +6,6 @@ import { Route, Routes } from 'react-router';
 import { ProtectedRoute } from './infrastructure/authentication/ProtectedRoute';
 import LogGroup from './pages/LogGroup';
 import ExportStreamsToS3 from './pages/ExportStreamsToS3';
-import BucketDetail from '../../renderer/src/components/layout/BucketDetail';
 import ObjectDetail from './components/layout/ObjectDetail';
 import Layout from './components/layout/Layout';
 import { ThemeProvider } from '@primer/react';
@@ -51,7 +50,6 @@ const App: React.FC<unknown> = () => {
             </ProtectedRoute>
           }
         /> */}
-          <Route path="/Bucket/:bucketName" element={<BucketDetail />} />
           <Route path="/Buckets/:bucketName/*" element={<ObjectDetail />} />
         </Routes>
         {/* </AuthProvider> */}

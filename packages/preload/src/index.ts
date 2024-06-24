@@ -5,8 +5,15 @@ export { manageWindow } from './manageWindow';
 import { contextBridge, ipcRenderer } from 'electron';
 
 declare global {
-  interface Window {
-    electronApi: unknown;
+  interface window {
+    electronApi: {
+      invoke: (method: string, params: object) => Promise<any>;
+      invokeListS3Buckets: () => Promise<any>;
+      invokeListS3Objects: (
+        bucketName: string,
+        prefix?: string
+      ) => Promise<any>;
+    };
   }
 }
 contextBridge.exposeInMainWorld('electronApi', {
